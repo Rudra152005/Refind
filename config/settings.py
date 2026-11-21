@@ -198,6 +198,10 @@ if importlib.util.find_spec('whitenoise') is not None:
 else:
     STATICFILES_STORAGE_BACKEND = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
+# Backwards compatibility for third-party libraries (e.g. django-cloudinary-storage)
+STATICFILES_STORAGE = STATICFILES_STORAGE_BACKEND
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
