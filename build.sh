@@ -11,5 +11,5 @@ python manage.py collectstatic --noinput
 # Run database migrations
 python manage.py migrate
 
-# Seed default admin, student accounts, and demo campus listings
-python manage.py seed_data
+# Seed default admin, student accounts, and demo campus listings (resilient)
+python manage.py seed_data || true

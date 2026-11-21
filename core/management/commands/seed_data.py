@@ -190,7 +190,10 @@ class Command(BaseCommand):
                     wanted_item_text=l_data.get('wanted_item_text', ''),
                     status=l_data['status']
                 )
-                listing.image.save(img_file.name, img_file, save=False)
+                try:
+                    listing.image.save(img_file.name, img_file, save=False)
+                except Exception as img_err:
+                    self.stdout.write(self.style.WARNING(f"  Note: Skipped remote image upload for '{listing.title}': {img_err}"))
                 listing.save()
                 created_listings.append(listing)
             else:
