@@ -1,3 +1,4 @@
+import importlib.util
 import os
 from pathlib import Path
 
@@ -68,11 +69,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 ]
-try:
-    import whitenoise  # noqa: F401
+if importlib.util.find_spec('whitenoise') is not None:
     MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
-except ImportError:
-    pass
 MIDDLEWARE.extend([
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -111,16 +109,17 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 USE_POSTGRES = os.environ.get('USE_POSTGRES', 'False').lower() in ('true', '1')
 
 if DATABASE_URL:
-    try:
-        import dj_database_url
+    if importlib.util.find_spec('dj_database_url') is not None:
+        import importlib
+        _dj_db = importlib.import_module('dj_database_url')
         DATABASES = {
-            'default': dj_database_url.config(
+            'default': _dj_db.config(
                 default=DATABASE_URL,
                 conn_max_age=600,
                 conn_health_checks=True,
             )
         }
-    except ImportError:
+    else:
         import urllib.parse as up
         up.uses_netloc.append("postgres")
         up.uses_netloc.append("postgresql")
@@ -194,10 +193,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 # Static storage configuration (WhiteNoise for production static compression)
-try:
-    import whitenoise  # noqa: F401
+if importlib.util.find_spec('whitenoise') is not None:
     STATICFILES_STORAGE_BACKEND = 'whitenoise.storage.CompressedStaticFilesStorage'
-except ImportError:
+else:
     STATICFILES_STORAGE_BACKEND = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 STORAGES = {
