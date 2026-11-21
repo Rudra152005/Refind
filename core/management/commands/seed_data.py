@@ -1,9 +1,9 @@
+import importlib.util
 import os
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
 
 from listings.models import Listing
 from transactions.models import Request, Report
@@ -12,18 +12,24 @@ from messaging.models import Message
 User = get_user_model()
 
 def create_placeholder_image(text, bg_color=(33, 140, 80), text_color=(255, 255, 255)):
-    """Generate a placeholder product image using Pillow."""
-    img = Image.new('RGB', (600, 450), color=bg_color)
-    draw = ImageDraw.Draw(img)
-    # Simple centered text
-    bbox = draw.textbbox((0, 0), text)
-    w = bbox[2] - bbox[0]
-    h = bbox[3] - bbox[1]
-    draw.text(((600 - w) / 2, (450 - h) / 2), text, fill=text_color)
-    
-    buf = BytesIO()
-    img.save(buf, format='JPEG', quality=85)
-    return ContentFile(buf.getvalue(), name=f"{text.lower().replace(' ', '_')[:20]}.jpg")
+    """Generate a placeholder product image using Pillow if available."""
+    if importlib.util.find_spec('PIL') is not None:
+        try:
+            import importlib
+            PIL_Image = importlib.import_module('PIL.Image')
+            PIL_ImageDraw = importlib.import_module('PIL.ImageDraw')
+            img = PIL_Image.new('RGB', (600, 450), color=bg_color)
+            draw = PIL_ImageDraw.Draw(img)
+            bbox = draw.textbbox((0, 0), text)
+            w = bbox[2] - bbox[0]
+            h = bbox[3] - bbox[1]
+            draw.text(((600 - w) / 2, (450 - h) / 2), text, fill=text_color)
+            buf = BytesIO()
+            img.save(buf, format='JPEG', quality=85)
+            return ContentFile(buf.getvalue(), name=f"{text.lower().replace(' ', '_')[:20]}.jpg")
+        except Exception:
+            return None
+    return None
 
 
 class Command(BaseCommand):
@@ -190,10 +196,11 @@ class Command(BaseCommand):
                     wanted_item_text=l_data.get('wanted_item_text', ''),
                     status=l_data['status']
                 )
-                try:
-                    listing.image.save(img_file.name, img_file, save=False)
-                except Exception as img_err:
-                    self.stdout.write(self.style.WARNING(f"  Note: Skipped remote image upload for '{listing.title}': {img_err}"))
+                if img_file is not None:
+                    try:
+                        listing.image.save(img_file.name, img_file, save=False)
+                    except Exception as img_err:
+                        self.stdout.write(self.style.WARNING(f"  Note: Skipped remote image upload for '{listing.title}': {img_err}"))
                 listing.save()
                 created_listings.append(listing)
             else:

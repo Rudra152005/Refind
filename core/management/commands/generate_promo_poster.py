@@ -1,8 +1,16 @@
+import importlib.util
 import os
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
 from django.core.management.base import BaseCommand
 from django.conf import settings
+
+if importlib.util.find_spec('PIL') is not None:
+    import importlib
+    Image = importlib.import_module('PIL.Image')
+    ImageDraw = importlib.import_module('PIL.ImageDraw')
+    ImageFont = importlib.import_module('PIL.ImageFont')
+else:
+    Image = ImageDraw = ImageFont = None
 
 class Command(BaseCommand):
     help = 'Generates 4 distinct, high-definition cinematic scene frames and a master poster for the ReFind video player.'
