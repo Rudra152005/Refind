@@ -46,17 +46,23 @@ class RegisterView(View):
             return redirect('accounts:dashboard')
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            success, verify_url, code = send_verification_email(request, user)
-            login(request, user)
-            messages.success(
-                request,
-                f"Welcome to ReFind, {user.full_name}! A 6-digit verification code has been sent to {user.email}."
-            )
-            # Store verification code & URL in session for seamless dev preview
-            request.session['dev_verification_url'] = verify_url
-            request.session['dev_verification_code'] = code
-            return redirect('accounts:verify_prompt')
+            try:
+                user = form.save()
+                success, verify_url, code = send_verification_email(request, user)
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                messages.success(
+                    request,
+                    f"Welcome to ReFind, {user.full_name}! A 6-digit verification code has been sent to {user.email}."
+                )
+                # Store verification code & URL in session for seamless dev preview
+                request.session['dev_verification_url'] = verify_url
+                request.session['dev_verification_code'] = code
+                return redirect('accounts:verify_prompt')
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).exception("Registration processing failed: %s", e)
+                messages.error(request, f"Could not complete registration: {e}")
+                return render(request, 'accounts/register.html', {'form': form})
         return render(request, 'accounts/register.html', {'form': form})
 
 
@@ -73,7 +79,7 @@ class LoginView(View):
         form = StudentLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data['user']
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             remember_me = form.cleaned_data.get('remember_me', True)
             if not remember_me:
                 request.session.set_expiry(0)

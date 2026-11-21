@@ -90,6 +90,8 @@ class StudentRegistrationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
+        if not user.username:
+            user.username = self.cleaned_data.get('email', '').strip().lower()
         role = self.cleaned_data.get('role', 'student')
         user.role = role
         if role == 'admin':

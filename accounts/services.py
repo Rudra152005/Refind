@@ -59,18 +59,28 @@ def send_verification_email(request, user):
     print(f" Direct Link:  {verification_url}")
     print("="*65 + "\n")
 
-    try:
-        send_mail(
-            subject=subject,
-            message=text_content,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            html_message=html_content,
-            fail_silently=False,
-        )
-        return True, verification_url, code
-    except Exception as e:
-        return False, verification_url, code
+    # Send asynchronously in a background thread so slow SMTP servers or network latency
+    # never block the HTTP response or cause worker timeouts on production platforms
+    import threading
+    import logging
+
+    def _deliver_email_task():
+        try:
+            send_mail(
+                subject=subject,
+                message=text_content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_content,
+                fail_silently=True,
+            )
+        except Exception as exc:
+            logging.getLogger(__name__).warning("Verification email delivery issue for %s: %s", user.email, exc)
+
+    email_thread = threading.Thread(target=_deliver_email_task, daemon=True)
+    email_thread.start()
+
+    return True, verification_url, code
 
 
 def verify_email_token(uidb64, token):
