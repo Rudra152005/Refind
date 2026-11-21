@@ -219,8 +219,11 @@ CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', '').strip()
 IS_TESTING = 'test' in sys.argv
 
 if USE_CLOUDINARY and CLOUDINARY_CLOUD_NAME and not IS_TESTING:
+    # When using Cloudinary only for media (and WhiteNoise for static),
+    # cloudinary_storage must be appended AFTER django.contrib.staticfiles
+    # so Django uses the standard collectstatic command.
     if 'cloudinary_storage' not in INSTALLED_APPS:
-        INSTALLED_APPS.insert(0, 'cloudinary_storage')
+        INSTALLED_APPS.append('cloudinary_storage')
     if 'cloudinary' not in INSTALLED_APPS:
         INSTALLED_APPS.append('cloudinary')
     CLOUDINARY_STORAGE = {
