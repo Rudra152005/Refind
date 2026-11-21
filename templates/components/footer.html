@@ -1,0 +1,73 @@
+<footer class="bg-white border-t border-border mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
+            
+            <!-- Brand & Mission -->
+            <div class="md:col-span-1 space-y-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-primary-green flex items-center justify-center text-white">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-xl font-extrabold text-main-text font-heading">Re<span class="text-primary-green">Find</span></span>
+                </div>
+                <p class="text-sm text-secondary-text leading-relaxed">
+                    "Find it again. Give it a new beginning." University-exclusive marketplace for sustainable student-to-student reuse, exchange, and community commerce.
+                </p>
+                <div class="flex items-center gap-2 text-xs font-semibold text-primary-green bg-light-green/70 px-3 py-1.5 rounded-lg w-fit">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i> Verified Students Only
+                </div>
+            </div>
+
+            <!-- Quick Browse -->
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4">Campus Categories</h4>
+                <ul class="space-y-2.5 text-sm text-secondary-text">
+                    <li><a href="{% url 'listings:browse' %}?category=Books" class="hover:text-primary-green transition">Books & Academic Materials</a></li>
+                    <li><a href="{% url 'listings:browse' %}?category=Electronics" class="hover:text-primary-green transition">Laptops & Calculators</a></li>
+                    <li><a href="{% url 'listings:browse' %}?category=Cycles" class="hover:text-primary-green transition">Bicycles & Commute</a></li>
+                    <li><a href="{% url 'listings:browse' %}?category=Hostel Essentials" class="hover:text-primary-green transition">Hostel & Room Essentials</a></li>
+                    <li><a href="{% url 'listings:browse' %}?category=Furniture" class="hover:text-primary-green transition">Study Desks & Chairs</a></li>
+                </ul>
+            </div>
+
+            <!-- Marketplace Types -->
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4">Ways to Reuse</h4>
+                <ul class="space-y-2.5 text-sm text-secondary-text">
+                    <li><a href="{% url 'listings:browse' %}?type=Sell" class="hover:text-primary-green transition">Buy Affordable Pre-Owned</a></li>
+                    <li><a href="{% url 'listings:browse' %}?type=Exchange" class="hover:text-primary-green transition">Propose Goods Exchange</a></li>
+                    <li><a href="{% url 'listings:browse' %}?type=Donate" class="hover:text-primary-green transition">Free Student Donations</a></li>
+                    <li><a href="{% url 'listings:create' %}" class="hover:text-primary-green transition">Publish a Campus Listing</a></li>
+                    <li><a href="{% url 'core:safety' %}" class="hover:text-primary-green transition">Safe In-Person Meetup Tips</a></li>
+                </ul>
+            </div>
+
+            <!-- Trust, Community & Rules -->
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4">Trust & Sustainability</h4>
+                <ul class="space-y-2.5 text-sm text-secondary-text">
+                    <li><a href="{% url 'core:about' %}" class="hover:text-primary-green transition">About ReFind Initiative</a></li>
+                    <li><a href="{% url 'core:safety' %}" class="hover:text-primary-green transition">Campus Handover Safety</a></li>
+                    <li><span class="text-xs text-muted-text">Zero Online Gateways: Cash or Direct In-Person Student Handover</span></li>
+                    <li class="pt-2">
+                        <div class="p-3 rounded-xl bg-soft-green border border-border">
+                            <span class="text-xs font-semibold text-main-text block">Zero Waste Campus Mission</span>
+                            <span class="text-[11px] text-secondary-text">Keep useful goods circulating within our student body.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-border mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-muted-text gap-4">
+            <p>© 2026 ReFind Campus Marketplace. Built with Django MVT, PostgreSQL, HTMX & Tailwind CSS.</p>
+            <div class="flex items-center gap-6">
+                <a href="{% url 'core:safety' %}" class="hover:text-primary-green">Safety Guidelines</a>
+                <a href="{% url 'core:about' %}" class="hover:text-primary-green">About</a>
+                {% if user.is_staff or user.role == 'admin' %}
+                    <a href="{% url 'core:admin_dashboard' %}" class="text-primary-green font-semibold">Moderation Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</footer>

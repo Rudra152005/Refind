@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}My Student Profile – ReFind{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Dashboard Sidebar -->
+        {% include 'components/dashboard_sidebar.html' %}
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0 bg-card-bg rounded-3xl border border-border p-6 sm:p-10 shadow-subtle space-y-8">
+            
+            <div class="border-b border-border pb-6">
+                <span class="text-xs font-bold uppercase tracking-wider text-primary-green">Personal Information</span>
+                <h1 class="text-2xl font-extrabold text-main-text font-heading mt-1">Student Profile</h1>
+                <p class="text-xs text-secondary-text mt-1">Update your public campus details, hostel hall, and contact phone number.</p>
+            </div>
+
+            <!-- Profile Summary & Badges -->
+            <div class="p-6 rounded-2xl bg-soft-green/60 border border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="{{ user.full_name }}" class="w-16 h-16 rounded-2xl object-cover border-2 border-primary-green/30">
+                    {% else %}
+                        <div class="w-16 h-16 rounded-2xl bg-light-green text-primary-green font-heading font-extrabold text-2xl flex items-center justify-center border-2 border-primary-green/30">
+                            {{ user.full_name|slice:":1"|default:"U"|upper }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h2 class="text-lg font-bold font-heading text-main-text">{{ user.full_name }}</h2>
+                        <p class="text-xs text-secondary-text">{{ user.email }}</p>
+                        <p class="text-[11px] text-muted-text mt-0.5">Member since {{ user.date_joined|date:"F Y" }}</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    {% if user.is_email_verified %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-light-green text-dark-green text-xs font-bold border border-accent-green/40">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-primary-green"></i> Verified Campus Student
+                        </span>
+                    {% else %}
+                        <a href="{% url 'accounts:verify_prompt' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 text-status-warning text-xs font-bold hover:underline">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i> Unverified Email (Click to verify)
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Edit Form -->
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">Full Name</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}<p class="text-xs text-status-error mt-1">{{ form.full_name.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">Phone Number (For Handover SMS/Call)</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}<p class="text-xs text-status-error mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">Hostel / Hall / Dormitory</label>
+                        {{ form.hostel }}
+                        {% if form.hostel.errors %}<p class="text-xs text-status-error mt-1">{{ form.hostel.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">Update Avatar Image</label>
+                    {{ form.avatar }}
+                    <p class="text-[11px] text-muted-text mt-1">Recommended square photo (Max 5MB).</p>
+                    {% if form.avatar.errors %}<p class="text-xs text-status-error mt-1">{{ form.avatar.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="pt-4 border-t border-border flex items-center justify-end">
+                    <button type="submit" class="px-8 py-3.5 rounded-xl bg-primary-green text-white font-heading font-semibold text-sm hover:bg-dark-green transition shadow-sm flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Save Profile Changes</span>
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+{% endblock %}

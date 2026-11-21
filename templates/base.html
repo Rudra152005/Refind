@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ReFind – Campus-Based Pre-Owned Goods Marketplace{% endblock %}</title>
+    
+    <!-- Core Theme Styles & Variables (Inlined to prevent caching issues) -->
+    <style>
+        :root {
+            /* Light Mode Default Variables */
+            --primary-green: #218C50;
+            --dark-green: #176B3A;
+            --light-green: #E8F5E9;
+            --soft-green: #F3F9F3;
+            --accent-green: #75B879;
+            --main-bg: #F8FAF7;
+            --card-bg: #FFFFFF;
+            --main-text: #243329;
+            --secondary-text: #6B786E;
+            --muted-text: #929B93;
+            --border: #E4EBE3;
+            --input-bg: #FBFCFA;
+            --navbar-bg: rgba(255, 255, 255, 0.95);
+            --dropdown-bg: #FFFFFF;
+        }
+
+        html.dark {
+            color-scheme: dark;
+            /* Dark Mode Variables (Campus Midnight Forest Theme) */
+            --primary-green: #2ECC71;
+            --dark-green: #27AE60;
+            --light-green: #183324;
+            --soft-green: #14231A;
+            --accent-green: #58D68D;
+            --main-bg: #0C130E;
+            --card-bg: #131F17;
+            --main-text: #EEF5F0;
+            --secondary-text: #A2B7A8;
+            --muted-text: #6B8272;
+            --border: #203326;
+            --input-bg: #17261D;
+            --navbar-bg: rgba(12, 19, 14, 0.95);
+            --dropdown-bg: #15221A;
+        }
+
+        html, body {
+            background-color: var(--main-bg);
+            color: var(--main-text);
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        /* Dark Mode Direct Overrides */
+        html.dark body {
+            background-color: var(--main-bg) !important;
+            color: var(--main-text) !important;
+        }
+        html.dark .bg-white {
+            background-color: var(--card-bg) !important;
+        }
+        html.dark .bg-card-bg {
+            background-color: var(--card-bg) !important;
+        }
+        html.dark .bg-main-bg,
+        html.dark .bg-\[\#F8FAF7\] {
+            background-color: var(--main-bg) !important;
+        }
+        html.dark .bg-soft-green,
+        html.dark .bg-gray-100 {
+            background-color: var(--soft-green) !important;
+        }
+        html.dark .bg-light-green {
+            background-color: var(--light-green) !important;
+        }
+        html.dark .bg-input-bg {
+            background-color: var(--input-bg) !important;
+        }
+        html.dark nav,
+        html.dark .bg-white\/95 {
+            background-color: var(--navbar-bg) !important;
+            border-color: var(--border) !important;
+        }
+        html.dark .bg-white\/90 {
+            background-color: rgba(19, 31, 23, 0.9) !important;
+        }
+        html.dark .bg-white\/80 {
+            background-color: rgba(19, 31, 23, 0.8) !important;
+        }
+        html.dark #user-menu-dropdown {
+            background-color: var(--dropdown-bg) !important;
+            border-color: var(--border) !important;
+        }
+        html.dark .text-main-text {
+            color: var(--main-text) !important;
+        }
+        html.dark .text-secondary-text {
+            color: var(--secondary-text) !important;
+        }
+        html.dark .text-muted-text {
+            color: var(--muted-text) !important;
+        }
+        html.dark .border-border,
+        html.dark .border-\[\#E4EBE3\] {
+            border-color: var(--border) !important;
+        }
+        html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+        html.dark select,
+        html.dark textarea {
+            background-color: var(--input-bg) !important;
+            color: var(--main-text) !important;
+            border-color: var(--border) !important;
+        }
+        html.dark input::placeholder,
+        html.dark textarea::placeholder {
+            color: var(--muted-text) !important;
+        }
+        html.dark .shadow-subtle {
+            box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.5), 0 1px 3px -1px rgba(0, 0, 0, 0.3) !important;
+        }
+        html.dark .shadow-hover {
+            box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.7), 0 4px 10px -2px rgba(46, 204, 113, 0.15) !important;
+        }
+
+        /* Strict Typography System */
+        body, p, nav, button, input, select, textarea, label {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6, .font-heading, .font-manrope, .stat-number, .price-tag {
+            font-family: 'Manrope', system-ui, sans-serif !important;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F3F9F3;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #75B879;
+            border-radius: 9999px;
+        }
+        html.dark ::-webkit-scrollbar-track {
+            background: #14231A !important;
+        }
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #27AE60 !important;
+        }
+    </style>
+
+    <!-- Instant Theme Detection & Global Theme Methods -->
+    <script>
+        // Apply theme immediately on head execution (no screen flash)
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('refind-theme');
+                const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {
+                console.warn('Theme init error:', e);
+            }
+        })();
+
+        // Global Theme Toggle Function
+        window.toggleTheme = function() {
+            try {
+                const html = document.documentElement;
+                const isCurrentlyDark = html.classList.contains('dark');
+                if (isCurrentlyDark) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('refind-theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('refind-theme', 'dark');
+                }
+                window.syncThemeUI();
+            } catch (err) {
+                console.error('Error toggling theme:', err);
+            }
+        };
+
+        // Synchronize Theme Toggle Icons
+        window.syncThemeUI = function() {
+            try {
+                const isDark = document.documentElement.classList.contains('dark');
+                const sunIcons = document.querySelectorAll('.theme-toggle-icon-sun');
+                const moonIcons = document.querySelectorAll('.theme-toggle-icon-moon');
+                
+                sunIcons.forEach(function(el) {
+                    el.style.display = isDark ? 'inline-flex' : 'none';
+                });
+                moonIcons.forEach(function(el) {
+                    el.style.display = isDark ? 'none' : 'inline-flex';
+                });
+                
+                const label = document.getElementById('theme-mode-label');
+                if (label) {
+                    label.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+                }
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            } catch (err) {
+                console.error('Error syncing theme UI:', err);
+            }
+        };
+    </script>
+
+    <!-- Google Fonts: Inter (Body) & Manrope (Headings, Product Names, Numbers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Design System CSS (Cache-busted) -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1.2">
+
+    <!-- Tailwind CSS (Play CDN with custom ReFind Design System tokens) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': 'var(--primary-green, #218C50)',
+                        'dark-green': 'var(--dark-green, #176B3A)',
+                        'light-green': 'var(--light-green, #E8F5E9)',
+                        'soft-green': 'var(--soft-green, #F3F9F3)',
+                        'accent-green': 'var(--accent-green, #75B879)',
+                        'main-bg': 'var(--main-bg, #F8FAF7)',
+                        'card-bg': 'var(--card-bg, #FFFFFF)',
+                        'main-text': 'var(--main-text, #243329)',
+                        'secondary-text': 'var(--secondary-text, #6B786E)',
+                        'muted-text': 'var(--muted-text, #929B93)',
+                        'border': 'var(--border, #E4EBE3)',
+                        'input-bg': 'var(--input-bg, #FBFCFA)',
+                        'status-success': '#218C50',
+                        'status-warning': '#D99A35',
+                        'status-error': '#D94B4B',
+                        'status-info': '#4385B5',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                        heading: ['Manrope', 'system-ui', 'sans-serif'],
+                        manrope: ['Manrope', 'system-ui', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'xl': '12px',
+                        '2xl': '16px',
+                    },
+                    boxShadow: {
+                        'subtle': '0 2px 8px -1px rgba(36, 51, 41, 0.05), 0 1px 3px -1px rgba(36, 51, 41, 0.03)',
+                        'hover': '0 10px 25px -3px rgba(33, 140, 80, 0.1), 0 4px 6px -2px rgba(33, 140, 80, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="flex flex-col min-h-screen antialiased text-main-text selection:bg-light-green selection:text-dark-green"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+    <!-- Navigation Bar -->
+    {% include 'components/navbar.html' %}
+
+    <!-- Flash Messages / Toast Alerts -->
+    {% include 'components/messages.html' %}
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
+
+    <!-- Global Scripts -->
+    <script>
+        // Initialize theme UI and Lucide icons on DOM readiness
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.syncThemeUI) {
+                window.syncThemeUI();
+            }
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+
+        // Re-sync after HTMX partial page swaps
+        document.body.addEventListener('htmx:afterSwap', function() {
+            if (window.syncThemeUI) {
+                window.syncThemeUI();
+            }
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+
+        // Listen for Wishlist updates to sync counter in navbar
+        document.body.addEventListener('wishlistUpdated', function(evt) {
+            const count = evt.detail.count;
+            const badge = document.getElementById('navbar-wishlist-count');
+            if (badge) {
+                badge.innerText = count;
+                if (count > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

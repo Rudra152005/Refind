@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Messages Inbox – ReFind Campus{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Dashboard Sidebar -->
+        {% include 'components/dashboard_sidebar.html' %}
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0 bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-6">
+            
+            <div class="flex items-center justify-between pb-6 border-b border-border">
+                <div>
+                    <h1 class="text-2xl font-extrabold text-main-text font-heading">Campus Messages</h1>
+                    <p class="text-xs text-secondary-text mt-1">Chat directly with buyers and sellers about item condition and handover spots.</p>
+                </div>
+                <span class="text-xs font-bold px-3 py-1 rounded-full bg-light-green text-primary-green">
+                    {{ conversations|length }} Active Conversations
+                </span>
+            </div>
+
+            {% if conversations %}
+                <div class="divide-y divide-border">
+                    {% for conv in conversations %}
+                        <a href="{% url 'messaging:thread' conv.listing.id conv.other_user.id %}" 
+                           class="py-4 px-3 -mx-3 rounded-2xl hover:bg-soft-green transition flex items-center justify-between gap-4 group">
+                            
+                            <!-- Interlocutor and Listing Preview -->
+                            <div class="flex items-center gap-3.5 min-w-0">
+                                {% if conv.other_user.avatar %}
+                                    <img src="{{ conv.other_user.avatar.url }}" alt="{{ conv.other_user.full_name }}" class="w-12 h-12 rounded-2xl object-cover border border-border shrink-0">
+                                {% else %}
+                                    <div class="w-12 h-12 rounded-2xl bg-light-green text-primary-green font-heading font-bold text-base flex items-center justify-center border border-border shrink-0">
+                                        {{ conv.other_user.full_name|slice:":1"|default:"U"|upper }}
+                                    </div>
+                                {% endif %}
+
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="font-heading font-bold text-sm text-main-text group-hover:text-primary-green transition truncate">
+                                            {{ conv.other_user.full_name }}
+                                        </h3>
+                                        {% if conv.other_user.is_email_verified %}
+                                            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-primary-green shrink-0"></i>
+                                        {% endif %}
+                                        <span class="text-muted-text text-[11px]">&bull; {{ conv.last_message.sent_at|naturaltime }}</span>
+                                    </div>
+
+                                    <div class="flex items-center gap-1.5 text-xs text-primary-green font-semibold mt-0.5">
+                                        <i data-lucide="tag" class="w-3 h-3"></i>
+                                        <span class="truncate">{{ conv.listing.title }}</span>
+                                    </div>
+
+                                    <p class="text-xs text-secondary-text mt-1 truncate max-w-md">
+                                        {% if conv.last_message.sender == user %}<span class="text-muted-text font-medium">You: </span>{% endif %}
+                                        {{ conv.last_message.body }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Right Status & Badges -->
+                            <div class="flex items-center gap-3 shrink-0">
+                                {% if conv.unread_count > 0 %}
+                                    <span class="px-2.5 py-0.5 rounded-full bg-status-warning text-white text-[11px] font-bold animate-pulse">
+                                        {{ conv.unread_count }} new
+                                    </span>
+                                {% endif %}
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-muted-text group-hover:text-primary-green group-hover:translate-x-1 transition-all"></i>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="py-16 text-center text-xs text-muted-text">
+                    <div class="w-16 h-16 rounded-full bg-soft-green text-primary-green flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="messages-square" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-base text-main-text">No conversations yet</h3>
+                    <p class="text-xs text-secondary-text mt-1 max-w-sm mx-auto">
+                        Find a product you like in the marketplace and click "Message Seller" to start a chat!
+                    </p>
+                    <a href="{% url 'listings:browse' %}" class="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-primary-green text-white font-semibold text-xs hover:bg-dark-green transition shadow-sm">
+                        <i data-lucide="compass" class="w-4 h-4"></i> Explore Listings
+                    </a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}

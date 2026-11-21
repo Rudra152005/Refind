@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Campus Safety Guidelines – ReFind{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="space-y-10">
+        
+        <!-- Header -->
+        <div class="text-center space-y-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-primary-green">Safe Campus Community</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-main-text font-heading">Handover Safety Guidelines</h1>
+            <p class="text-sm text-secondary-text max-w-xl mx-auto">
+                ReFind is an offline, in-person campus marketplace. Follow these practical recommendations for safe, smooth transactions with fellow students.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Tip 1 -->
+            <div class="bg-white rounded-2xl border border-border p-6 shadow-subtle flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-heading font-bold text-base text-main-text">Meet in Public Campus Spaces</h3>
+                    <p class="text-xs text-secondary-text leading-relaxed">
+                        Always schedule handovers in well-lit, populated campus areas: university library lobby, campus cafeteria, student activity center, or departmental reception.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tip 2 -->
+            <div class="bg-white rounded-2xl border border-border p-6 shadow-subtle flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="eye" class="w-5 h-5"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-heading font-bold text-base text-main-text">Inspect Before Handover</h3>
+                    <p class="text-xs text-secondary-text leading-relaxed">
+                        Take a minute to verify item condition, test electronic gadgets (turn laptops or calculators on), and ensure all accessories are present.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tip 3 -->
+            <div class="bg-white rounded-2xl border border-border p-6 shadow-subtle flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-heading font-bold text-base text-main-text">Communicate via ReFind</h3>
+                    <p class="text-xs text-secondary-text leading-relaxed">
+                        Keep conversations on the platform messenger so there is a documented conversation trail tied directly to the listing and user profile.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tip 4 -->
+            <div class="bg-white rounded-2xl border border-border p-6 shadow-subtle flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-heading font-bold text-base text-main-text">Report Suspicious Behavior</h3>
+                    <p class="text-xs text-secondary-text leading-relaxed">
+                        If a listing appears stolen, misleading, or inappropriate, use the "Report Listing" button to notify campus moderators immediately.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-light-green rounded-2xl border border-accent-green/40 p-6 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i data-lucide="alert-circle" class="w-6 h-6 text-primary-green"></i>
+                <span class="text-sm font-semibold text-dark-green">Have a question or encounter a problem on campus?</span>
+            </div>
+            <a href="{% url 'listings:browse' %}" class="px-4 py-2 rounded-xl bg-primary-green text-white font-semibold text-xs hover:bg-dark-green transition">
+                Browse Marketplace
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

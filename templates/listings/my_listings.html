@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}My Listings – Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Dashboard Sidebar -->
+        {% include 'components/dashboard_sidebar.html' %}
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0 bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-6">
+            
+            <!-- Header & Action -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
+                <div>
+                    <h1 class="text-2xl font-extrabold text-main-text font-heading">My Campus Listings</h1>
+                    <p class="text-xs text-secondary-text mt-1">Manage your active products, edit details, or update availability status.</p>
+                </div>
+                <a href="{% url 'listings:create' %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-green text-white font-semibold text-xs hover:bg-dark-green transition shadow-sm">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>List New Item</span>
+                </a>
+            </div>
+
+            <!-- Status Filter Tabs -->
+            <div class="flex flex-wrap items-center gap-2 pb-2">
+                <a href="?status=all" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition {% if status_filter == 'all' %}bg-primary-green text-white shadow-sm{% else %}bg-soft-green text-secondary-text hover:text-primary-green{% endif %}">
+                    All ({{ total_listings }})
+                </a>
+                <a href="?status=Available" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition {% if status_filter == 'Available' %}bg-primary-green text-white shadow-sm{% else %}bg-soft-green text-secondary-text hover:text-primary-green{% endif %}">
+                    Available ({{ available_count }})
+                </a>
+                <a href="?status=Reserved" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition {% if status_filter == 'Reserved' %}bg-primary-green text-white shadow-sm{% else %}bg-soft-green text-secondary-text hover:text-primary-green{% endif %}">
+                    Reserved ({{ reserved_count }})
+                </a>
+                <a href="?status=Sold" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition {% if status_filter == 'Sold' %}bg-primary-green text-white shadow-sm{% else %}bg-soft-green text-secondary-text hover:text-primary-green{% endif %}">
+                    Completed Handover ({{ completed_count }})
+                </a>
+            </div>
+
+            <!-- Listings Table / Cards -->
+            {% if page_obj %}
+                <div class="divide-y divide-border">
+                    {% for item in page_obj %}
+                        <div class="py-4.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <div class="w-16 h-16 rounded-xl bg-soft-green border border-border overflow-hidden shrink-0">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center text-muted-text">
+                                            <i data-lucide="package" class="w-6 h-6 stroke-1"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-primary-green">{{ item.category }}</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold
+                                            {% if item.status == 'Available' %} bg-light-green text-dark-green
+                                            {% elif item.status == 'Reserved' %} bg-amber-100 text-status-warning
+                                            {% elif item.status == 'Sold' %} bg-red-100 text-status-error
+                                            {% elif item.status == 'Exchanged' %} bg-sky-100 text-status-info
+                                            {% else %} bg-gray-100 text-muted-text
+                                            {% endif %}">
+                                            {{ item.status }}
+                                        </span>
+                                    </div>
+                                    <h3 class="font-heading font-bold text-sm text-main-text hover:text-primary-green truncate">
+                                        <a href="{% url 'listings:detail' item.id %}">{{ item.title }}</a>
+                                    </h3>
+                                    <p class="text-xs text-secondary-text mt-0.5">
+                                        {% if item.listing_type == 'Sell' %}${{ item.price|floatformat:2 }}{% else %}{{ item.listing_type }}{% endif %}
+                                        &bull; Listed {{ item.created_at|naturaltime }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+                                <a href="{% url 'listings:detail' item.id %}" class="p-2 rounded-xl border border-border text-secondary-text hover:text-primary-green hover:bg-soft-green transition" title="View Details">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </a>
+                                <a href="{% url 'listings:edit' item.id %}" class="p-2 rounded-xl border border-border text-secondary-text hover:text-primary-green hover:bg-soft-green transition" title="Edit">
+                                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                                </a>
+
+                                <!-- Toggle status -->
+                                <form action="{% url 'listings:status_toggle' item.id %}" method="post" class="inline">
+                                    {% csrf_token %}
+                                    {% if item.status == 'Available' %}
+                                        <input type="hidden" name="status" value="Inactive">
+                                        <button type="submit" class="p-2 rounded-xl border border-border text-muted-text hover:text-status-warning hover:bg-amber-50 transition" title="Hide Listing">
+                                            <i data-lucide="eye-off" class="w-4 h-4"></i>
+                                        </button>
+                                    {% elif item.status == 'Inactive' %}
+                                        <input type="hidden" name="status" value="Available">
+                                        <button type="submit" class="p-2 rounded-xl border border-border text-primary-green hover:bg-light-green transition" title="Activate Listing">
+                                            <i data-lucide="check" class="w-4 h-4"></i>
+                                        </button>
+                                    {% endif %}
+                                </form>
+
+                                <!-- Delete -->
+                                <form action="{% url 'listings:delete' item.id %}" method="post" class="inline" onsubmit="return confirm('Are you sure you want to permanently delete this listing?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="p-2 rounded-xl border border-red-200 text-status-error hover:bg-red-50 transition" title="Delete">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <div class="pt-6 border-t border-border flex justify-center gap-2">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}" class="px-3 py-1.5 rounded-xl border border-border text-xs font-semibold">Prev</a>
+                        {% endif %}
+                        <span class="px-3 py-1.5 text-xs text-muted-text">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}" class="px-3 py-1.5 rounded-xl border border-border text-xs font-semibold">Next</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="py-12 text-center">
+                    <i data-lucide="package-x" class="w-12 h-12 text-muted-text mx-auto mb-3"></i>
+                    <h3 class="font-heading font-bold text-base text-main-text">No listings found</h3>
+                    <p class="text-xs text-secondary-text mt-1">You haven't listed any items with this status filter.</p>
+                    <a href="{% url 'listings:create' %}" class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-primary-green text-white font-semibold text-xs hover:bg-dark-green transition shadow-sm">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Add Listing
+                    </a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}

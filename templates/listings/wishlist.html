@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}My Saved Wishlist – ReFind{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Dashboard Sidebar -->
+        {% include 'components/dashboard_sidebar.html' %}
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0 bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-6">
+            
+            <div class="flex items-center justify-between pb-6 border-b border-border">
+                <div>
+                    <h1 class="text-2xl font-extrabold text-main-text font-heading">Saved Wishlist</h1>
+                    <p class="text-xs text-secondary-text mt-1">Bookmarked items you want to keep track of across campus.</p>
+                </div>
+                <span class="text-xs font-bold px-3 py-1 rounded-full bg-light-green text-primary-green">
+                    {{ page_obj.paginator.count }} Saved Items
+                </span>
+            </div>
+
+            {% if page_obj %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {% for listing in page_obj %}
+                        {% include 'components/product_card.html' with listing=listing %}
+                    {% endfor %}
+                </div>
+
+                {% if page_obj.has_other_pages %}
+                    <div class="pt-6 border-t border-border flex justify-center gap-2">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 rounded-xl border border-border text-xs font-semibold">Prev</a>
+                        {% endif %}
+                        <span class="px-3 py-1.5 text-xs text-muted-text">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1.5 rounded-xl border border-border text-xs font-semibold">Next</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="py-16 text-center">
+                    <div class="w-16 h-16 rounded-full bg-soft-green text-muted-text flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="heart" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-base text-main-text">Your wishlist is empty</h3>
+                    <p class="text-xs text-secondary-text mt-1 max-w-sm mx-auto">Click the heart icon on any product card in the marketplace to save items here.</p>
+                    <a href="{% url 'listings:browse' %}" class="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-primary-green text-white font-semibold text-xs hover:bg-dark-green transition shadow-sm">
+                        <i data-lucide="compass" class="w-4 h-4"></i> Browse Marketplace
+                    </a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}

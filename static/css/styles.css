@@ -1,0 +1,300 @@
+/* ==============================================================================
+   ReFind Custom Design System & Theme Styles
+   Light Mode (Default) & Dark Mode (Campus Midnight Forest)
+   ============================================================================== */
+
+:root {
+    /* Light Mode Tokens (Preserved strictly as original) */
+    --primary-green: #218C50;
+    --dark-green: #176B3A;
+    --light-green: #E8F5E9;
+    --soft-green: #F3F9F3;
+    --accent-green: #75B879;
+    --main-bg: #F8FAF7;
+    --card-bg: #FFFFFF;
+    --main-text: #243329;
+    --secondary-text: #6B786E;
+    --muted-text: #929B93;
+    --border: #E4EBE3;
+    --input-bg: #FBFCFA;
+    --navbar-bg: rgba(255, 255, 255, 0.95);
+    --dropdown-bg: #FFFFFF;
+    --status-success: #218C50;
+    --status-warning: #D99A35;
+    --status-error: #D94B4B;
+    --status-info: #4385B5;
+}
+
+/* ==============================================================================
+   DARK MODE SYSTEM (Eco-friendly, deep forest midnight interactive theme)
+   ============================================================================== */
+html.dark {
+    color-scheme: dark;
+    --primary-green: #2ECC71;
+    --dark-green: #27AE60;
+    --light-green: #183324;
+    --soft-green: #14231A;
+    --accent-green: #58D68D;
+    --main-bg: #0C130E;
+    --card-bg: #131F17;
+    --main-text: #EEF5F0;
+    --secondary-text: #A2B7A8;
+    --muted-text: #6B8272;
+    --border: #203326;
+    --input-bg: #17261D;
+    --navbar-bg: rgba(12, 19, 14, 0.95);
+    --dropdown-bg: #15221A;
+    --status-success: #2ECC71;
+    --status-warning: #F1C40F;
+    --status-error: #E74C3C;
+    --status-info: #5DADE2;
+}
+
+/* Base Body & Root */
+html, body {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+html.dark,
+html.dark body {
+    background-color: var(--main-bg) !important;
+    color: var(--main-text) !important;
+}
+
+/* Dark Mode Surface Overrides */
+html.dark .bg-main-bg,
+html.dark .bg-\[\#F8FAF7\] {
+    background-color: var(--main-bg) !important;
+}
+
+html.dark .bg-card-bg,
+html.dark .bg-white {
+    background-color: var(--card-bg) !important;
+}
+
+html.dark .bg-soft-green,
+html.dark .bg-gray-100 {
+    background-color: var(--soft-green) !important;
+}
+
+html.dark .bg-light-green {
+    background-color: var(--light-green) !important;
+}
+
+html.dark .bg-input-bg {
+    background-color: var(--input-bg) !important;
+}
+
+/* Navbar & Glass Surfaces */
+html.dark nav,
+html.dark .bg-white\/95 {
+    background-color: var(--navbar-bg) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .bg-white\/90 {
+    background-color: rgba(19, 31, 23, 0.9) !important;
+}
+
+html.dark .bg-white\/80 {
+    background-color: rgba(19, 31, 23, 0.8) !important;
+}
+
+html.dark .bg-white\/20 {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark .bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+html.dark #user-menu-dropdown {
+    background-color: var(--dropdown-bg) !important;
+    border-color: var(--border) !important;
+}
+
+/* Typography in Dark Mode */
+html.dark .text-main-text {
+    color: var(--main-text) !important;
+}
+
+html.dark .text-secondary-text {
+    color: var(--secondary-text) !important;
+}
+
+html.dark .text-muted-text {
+    color: var(--muted-text) !important;
+}
+
+html.dark .text-primary-green {
+    color: var(--primary-green) !important;
+}
+
+html.dark .text-dark-green {
+    color: var(--accent-green) !important;
+}
+
+/* Borders in Dark Mode */
+html.dark .border-border,
+html.dark .border-\[\#E4EBE3\] {
+    border-color: var(--border) !important;
+}
+
+/* Hover States & Dynamic Interactivity */
+html.dark .hover\:bg-soft-green:hover,
+html.dark .hover\:bg-gray-50:hover {
+    background-color: var(--soft-green) !important;
+}
+
+html.dark .hover\:bg-light-green:hover,
+html.dark .hover\:bg-gray-100:hover,
+html.dark .hover\:bg-gray-200:hover {
+    background-color: var(--light-green) !important;
+}
+
+html.dark .hover\:text-primary-green:hover {
+    color: var(--primary-green) !important;
+}
+
+html.dark .hover\:border-accent-green:hover,
+html.dark .group:hover .group-hover\:border-accent-green {
+    border-color: var(--accent-green) !important;
+}
+
+/* Interactive Form Inputs in Dark Mode */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+html.dark select,
+html.dark textarea {
+    background-color: var(--input-bg) !important;
+    color: var(--main-text) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: var(--muted-text) !important;
+}
+
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+    border-color: var(--primary-green) !important;
+    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.25) !important;
+    outline: none !important;
+}
+
+/* Buttons & Hero CTAs */
+html.dark .bg-primary-green {
+    background-color: #218C50 !important;
+    color: #FFFFFF !important;
+}
+
+html.dark .bg-primary-green:hover {
+    background-color: #176B3A !important;
+}
+
+/* Retain high-contrast CTA inside dark green gradients */
+html.dark .bg-gradient-to-r.from-primary-green {
+    box-shadow: 0 10px 30px -5px rgba(33, 140, 80, 0.35) !important;
+}
+html.dark .bg-gradient-to-r.from-primary-green a.bg-white {
+    background-color: #FFFFFF !important;
+    color: #176B3A !important;
+}
+html.dark .bg-gradient-to-r.from-primary-green a.bg-white:hover {
+    background-color: #E8F5E9 !important;
+}
+
+/* Dark Mode Shadows */
+html.dark .shadow-subtle {
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.5), 0 1px 3px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark .shadow-hover {
+    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.7), 0 4px 10px -2px rgba(46, 204, 113, 0.15) !important;
+}
+
+/* Toast / Alert Boxes */
+html.dark .bg-red-50 {
+    background-color: rgba(217, 75, 75, 0.15) !important;
+    border-color: rgba(217, 75, 75, 0.3) !important;
+    color: #FF8B8B !important;
+}
+
+html.dark .bg-amber-50 {
+    background-color: rgba(217, 154, 53, 0.15) !important;
+    border-color: rgba(217, 154, 53, 0.3) !important;
+    color: #FBD38D !important;
+}
+
+html.dark .bg-sky-50 {
+    background-color: rgba(67, 133, 181, 0.15) !important;
+    border-color: rgba(67, 133, 181, 0.3) !important;
+    color: #90CDF4 !important;
+}
+
+/* Custom Scrollbar for Dark Mode */
+html.dark ::-webkit-scrollbar-track {
+    background: #14231A !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+    background: #27AE60 !important;
+}
+
+/* ==============================================================================
+   TYPOGRAPHY SYSTEM SPECIFICATIONS
+   1. MANROPE: Headings, product names, numbers, prices
+   2. INTER: Body, navigation, buttons, forms, labels
+   ============================================================================== */
+
+/* Manrope for Headings, Product Names and Important Numbers */
+h1, h2, h3, h4, h5, h6,
+.font-heading,
+.font-manrope,
+.page-title,
+.section-heading,
+.product-title,
+.product-name,
+.stat-number,
+.stat-kpi,
+.price-value,
+.metric-value,
+.kpi-number,
+.metric-count {
+    font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* Inter for Body, Paragraphs, Navigation, Buttons, Forms, Labels & Descriptions */
+body,
+p,
+nav,
+nav a,
+.nav-link,
+button,
+.btn,
+input,
+select,
+textarea,
+label,
+.form-label,
+.font-sans,
+.font-inter,
+.description,
+.helper-text {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Smooth visual rendering */
+img {
+    content-visibility: auto;
+}
+
+/* HTMX transition indicators */
+.htmx-indicator {
+    display: none;
+}
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+    display: flex !important;
+}

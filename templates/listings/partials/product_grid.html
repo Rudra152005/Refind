@@ -1,0 +1,73 @@
+<!-- Results Counter & Sorting Summary -->
+<div class="flex items-center justify-between mb-6 pb-4 border-b border-border">
+    <div class="text-sm text-secondary-text font-medium">
+        Showing <span class="font-bold text-main-text">{{ page_obj.paginator.count }}</span> available campus goods
+        {% if q %} for "<span class="font-bold text-primary-green">{{ q }}</span>"{% endif %}
+    </div>
+</div>
+
+{% if page_obj %}
+    <!-- 3-Column Product Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        {% for listing in page_obj %}
+            {% include 'components/product_card.html' with listing=listing %}
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if page_obj.has_other_pages %}
+        <div class="mt-12 flex items-center justify-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}"
+                   hx-get="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}"
+                   hx-target="#product-grid-container"
+                   hx-push-url="true"
+                   class="px-3.5 py-2 rounded-xl border border-border bg-white text-xs font-semibold text-secondary-text hover:text-primary-green hover:border-primary-green transition flex items-center gap-1">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev
+                </a>
+            {% endif %}
+
+            <div class="flex items-center gap-1 text-xs font-medium">
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p == page_obj.number %}
+                        <span class="w-8 h-8 rounded-xl bg-primary-green text-white font-bold flex items-center justify-center shadow-sm">
+                            {{ p }}
+                        </span>
+                    {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                        <a href="?page={{ p }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}"
+                           hx-get="?page={{ p }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}"
+                           hx-target="#product-grid-container"
+                           hx-push-url="true"
+                           class="w-8 h-8 rounded-xl border border-border bg-white text-secondary-text hover:text-primary-green hover:border-primary-green transition flex items-center justify-center">
+                            {{ p }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}"
+                   hx-get="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}"
+                   hx-target="#product-grid-container"
+                   hx-push-url="true"
+                   class="px-3.5 py-2 rounded-xl border border-border bg-white text-xs font-semibold text-secondary-text hover:text-primary-green hover:border-primary-green transition flex items-center gap-1">
+                    Next <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% else %}
+    <div class="bg-card-bg rounded-2xl border border-border p-12 text-center">
+        <div class="w-16 h-16 rounded-full bg-soft-green text-primary-green flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="search-x" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-heading font-bold text-lg text-main-text">No matching listings found</h3>
+        <p class="text-xs text-secondary-text mt-1 max-w-sm mx-auto">
+            Try adjusting your search keywords, price filters, or category selection to find what you need.
+        </p>
+        <a href="{% url 'listings:browse' %}" class="inline-flex items-center gap-1.5 mt-5 px-4 py-2 rounded-xl bg-light-green text-primary-green font-semibold text-xs hover:bg-accent-green hover:text-white transition">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset All Filters
+        </a>
+    </div>
+{% endif %}

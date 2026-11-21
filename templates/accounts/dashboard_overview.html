@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Student Dashboard Overview – ReFind{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Dashboard Sidebar -->
+        {% include 'components/dashboard_sidebar.html' %}
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0 space-y-8">
+            
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-to-r from-soft-green to-white p-6 sm:p-8 rounded-3xl border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-subtle">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-primary-green">Student Portal</span>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-main-text font-heading mt-1">
+                        Welcome back, {{ user.full_name }}!
+                    </h1>
+                    <p class="text-xs text-secondary-text mt-1">Here is a summary of your campus marketplace listings and requests.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{% url 'listings:create' %}" class="px-4 py-2.5 rounded-xl bg-primary-green text-white font-semibold text-xs hover:bg-dark-green transition shadow-sm flex items-center gap-1.5">
+                        <i data-lucide="plus" class="w-4 h-4"></i> List an Item
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                <!-- Total Listings -->
+                <div class="bg-card-bg rounded-2xl border border-border p-5 shadow-subtle">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-muted-text">My Listings</span>
+                        <div class="w-8 h-8 rounded-lg bg-soft-green text-primary-green flex items-center justify-center">
+                            <i data-lucide="package" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold font-heading text-main-text">{{ total_listings }}</div>
+                    <p class="text-[11px] text-primary-green font-semibold mt-1">{{ active_listings }} active</p>
+                </div>
+
+                <!-- Items Handed Over / Sold -->
+                <div class="bg-card-bg rounded-2xl border border-border p-5 shadow-subtle">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-muted-text">Handed Over</span>
+                        <div class="w-8 h-8 rounded-lg bg-light-green text-dark-green flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold font-heading text-dark-green">{{ sold_listings }}</div>
+                    <p class="text-[11px] text-secondary-text font-medium mt-1">Sold, exchanged, donated</p>
+                </div>
+
+                <!-- Received Requests Pending -->
+                <div class="bg-card-bg rounded-2xl border border-border p-5 shadow-subtle">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-muted-text">Received Requests</span>
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-status-warning flex items-center justify-center">
+                            <i data-lucide="inbox" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold font-heading {% if received_pending_requests > 0 %}text-status-warning{% else %}text-main-text{% endif %}">
+                        {{ received_pending_requests }}
+                    </div>
+                    <p class="text-[11px] text-muted-text font-medium mt-1">Awaiting your response</p>
+                </div>
+
+                <!-- Sent Requests Pending -->
+                <div class="bg-card-bg rounded-2xl border border-border p-5 shadow-subtle">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-muted-text">Sent Requests</span>
+                        <div class="w-8 h-8 rounded-lg bg-soft-green text-primary-green flex items-center justify-center">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold font-heading text-main-text">{{ sent_pending_requests }}</div>
+                    <p class="text-[11px] text-muted-text font-medium mt-1">Pending seller review</p>
+                </div>
+
+                <!-- Unread Messages -->
+                <div class="bg-card-bg rounded-2xl border border-border p-5 shadow-subtle">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-muted-text">Unread Messages</span>
+                        <div class="w-8 h-8 rounded-lg bg-soft-green text-primary-green flex items-center justify-center">
+                            <i data-lucide="message-square" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold font-heading {% if unread_messages > 0 %}text-status-warning{% else %}text-main-text{% endif %}">
+                        {{ unread_messages }}
+                    </div>
+                    <p class="text-[11px] text-muted-text font-medium mt-1">In campus chats</p>
+                </div>
+
+                <!-- Seller Reputation -->
+                <div class="bg-card-bg rounded-2xl border border-border p-5 shadow-subtle">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-muted-text">Seller Rating</span>
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-status-warning flex items-center justify-center">
+                            <i data-lucide="star" class="w-4 h-4 fill-status-warning"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold font-heading text-status-warning">
+                        {% if user.average_rating %}{{ user.average_rating }} / 5{% else %}N/A{% endif %}
+                    </div>
+                    <p class="text-[11px] text-muted-text font-medium mt-1">{{ user.total_ratings_count }} peer reviews</p>
+                </div>
+            </div>
+
+            <!-- Recent Received Requests Table -->
+            <div class="bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-4">
+                <div class="flex items-center justify-between border-b border-border pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold font-heading text-main-text">Recent Buyer Requests for Your Items</h2>
+                        <p class="text-xs text-secondary-text">Action pending buy, exchange, and donation proposals.</p>
+                    </div>
+                    <a href="{% url 'transactions:received_requests' %}" class="text-xs font-semibold text-primary-green hover:underline">View all</a>
+                </div>
+
+                {% if recent_received_requests %}
+                    <div class="divide-y divide-border">
+                        {% for req in recent_received_requests %}
+                            <div class="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                                <div>
+                                    <span class="font-bold text-main-text">{{ req.requester.full_name }}</span>
+                                    <span class="text-secondary-text">requested</span>
+                                    <a href="{% url 'listings:detail' req.listing.id %}" class="font-semibold text-primary-green hover:underline">
+                                        "{{ req.listing.title }}"
+                                    </a>
+                                    <p class="text-muted-text text-[11px] mt-0.5">{{ req.created_at|naturaltime }}</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold
+                                        {% if req.status == 'Pending' %}bg-amber-100 text-status-warning
+                                        {% elif req.status == 'Accepted' %}bg-light-green text-dark-green
+                                        {% elif req.status == 'Completed' %}bg-green-100 text-primary-green
+                                        {% else %}bg-gray-100 text-muted-text{% endif %}">
+                                        {{ req.status }}
+                                    </span>
+                                    {% if req.status == 'Pending' %}
+                                        <form action="{% url 'transactions:accept_request' req.id %}" method="post" class="inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-primary-green text-white font-semibold text-[11px] hover:bg-dark-green transition">
+                                                Accept
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="py-6 text-center text-xs text-muted-text">
+                        No requests received yet. Share your listings with classmates to get started!
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Recent Listings Preview -->
+            <div class="bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-4">
+                <div class="flex items-center justify-between border-b border-border pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold font-heading text-main-text">My Active Listings</h2>
+                        <p class="text-xs text-secondary-text">Quick overview of products you've posted on campus.</p>
+                    </div>
+                    <a href="{% url 'listings:my_listings' %}" class="text-xs font-semibold text-primary-green hover:underline">Manage listings</a>
+                </div>
+
+                {% if recent_listings %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {% for item in recent_listings|slice:":3" %}
+                            {% include 'components/product_card.html' with listing=item %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="py-6 text-center text-xs text-muted-text">
+                        You have not published any items yet.
+                        <a href="{% url 'listings:create' %}" class="text-primary-green font-semibold hover:underline block mt-1">Create your first listing &rarr;</a>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

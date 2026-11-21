@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}About ReFind – Campus Pre-Owned Goods Marketplace{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="space-y-12">
+        
+        <!-- Header -->
+        <div class="text-center space-y-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-primary-green">Our Campus Mission</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-main-text font-heading">About ReFind</h1>
+            <p class="text-lg text-secondary-text max-w-2xl mx-auto">
+                "Find it again. Give it a new beginning."
+            </p>
+        </div>
+
+        <!-- Vision -->
+        <div class="bg-white rounded-2xl border border-border p-8 shadow-subtle space-y-4">
+            <h2 class="text-xl font-bold font-heading text-main-text flex items-center gap-2">
+                <i data-lucide="target" class="w-5 h-5 text-primary-green"></i>
+                The Campus Challenge
+            </h2>
+            <p class="text-sm text-secondary-text leading-relaxed">
+                Every semester, thousands of graduating university students move out of dorms, leaving behind excellent textbooks, scientific calculators, study lamps, bicycles, and furniture. Meanwhile, incoming freshmen spend excessive amounts purchasing brand new supplies.
+            </p>
+            <p class="text-sm text-secondary-text leading-relaxed">
+                Standard online marketplaces charge high commission fees, involve complex courier shipping, and lack student verification. ReFind was created as an exclusive, localized university network where verified students connect directly for offline, in-person handovers.
+            </p>
+        </div>
+
+        <!-- Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl border border-border p-6 shadow-subtle space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-light-green text-primary-green flex items-center justify-center">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-heading font-bold text-base text-main-text">Campus Verification</h3>
+                <p class="text-xs text-secondary-text leading-relaxed">
+                    Only students with valid university email credentials can interact, trade, and message, establishing peer accountability.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-border p-6 shadow-subtle space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-light-green text-primary-green flex items-center justify-center">
+                    <i data-lucide="leaf" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-heading font-bold text-base text-main-text">Zero Waste Reuse</h3>
+                <p class="text-xs text-secondary-text leading-relaxed">
+                    Giving usable goods a second life prevents campus waste, reduces student living costs, and fosters a circular economy.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-border p-6 shadow-subtle space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-light-green text-primary-green flex items-center justify-center">
+                    <i data-lucide="handshake" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-heading font-bold text-base text-main-text">Three Flexible Ways</h3>
+                <p class="text-xs text-secondary-text leading-relaxed">
+                    Whether you want to sell at student-friendly prices, barter goods through exchanges, or donate for free to peers in need.
+                </p>
+            </div>
+        </div>
+
+        <!-- Tech Stack Info -->
+        <div class="bg-soft-green rounded-2xl border border-border p-8 space-y-4">
+            <h2 class="text-lg font-bold font-heading text-main-text">Architecture & Engineering</h2>
+            <p class="text-xs text-secondary-text leading-relaxed">
+                ReFind is built following strict software engineering principles: Django 5 server-rendered MVT architecture, transactional row-level concurrency protection (`select_for_update()`) to prevent double acceptance, PostgreSQL data persistence, and dynamic partial updates powered by HTMX and Tailwind CSS.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

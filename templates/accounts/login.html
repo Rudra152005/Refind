@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Student & Staff Login – ReFind Campus{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full bg-card-bg rounded-3xl border border-border p-8 sm:p-10 shadow-hover space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-light-green text-primary-green flex items-center justify-center mx-auto shadow-sm">
+                <i data-lucide="log-in" class="w-6 h-6"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-main-text font-heading">ReFind Campus Login</h1>
+            <p class="text-xs text-secondary-text">Sign in to your account with your registered email and password.</p>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-status-error font-medium">
+                    {% for err in form.non_field_errors %}{{ err }}<br>{% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Email -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1">Email Address</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-xs text-status-error mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-muted-text">Password</label>
+                    <a href="{% url 'accounts:password_reset' %}" class="text-xs text-primary-green hover:underline font-semibold">
+                        Forgot password?
+                    </a>
+                </div>
+                <div class="relative">
+                    {{ form.password }}
+                    <button type="button" onclick="togglePasswordVisibility('id_password', this)" class="absolute right-3.5 top-3.5 text-muted-text hover:text-main-text">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                {% if form.password.errors %}
+                    <p class="text-xs text-status-error mt-1">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Remember Me -->
+            <div class="flex items-center gap-2 pt-1">
+                {{ form.remember_me }}
+                <label for="{{ form.remember_me.id_for_label }}" class="text-xs text-secondary-text font-medium cursor-pointer">
+                    Remember me on this browser
+                </label>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-primary-green text-white font-heading font-semibold text-sm hover:bg-dark-green transition shadow-sm flex items-center justify-center gap-2">
+                <span>Sign In to ReFind</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </form>
+
+        <!-- Quick Demo / Reference Card -->
+        <div class="p-4 rounded-2xl bg-soft-green/60 border border-border text-xs text-secondary-text space-y-2">
+            <span class="font-bold text-main-text block flex items-center gap-1.5">
+                <i data-lucide="info" class="w-3.5 h-3.5 text-primary-green"></i> Flexible Login Credentials
+            </span>
+            <p class="text-[11px] leading-relaxed">
+                You can register a brand new student or administrator account with <strong>any email and password of your choice</strong>.
+            </p>
+            <div class="pt-1 text-[11px] text-muted-text">
+                <span class="font-semibold text-secondary-text">Or test using pre-seeded accounts:</span>
+                <br>&bull; Admin: <code class="text-dark-green">admin@campus.edu</code> / <code class="text-dark-green">AdminPass123!</code>
+                <br>&bull; Student: <code class="text-dark-green">alex.chen@campus.edu</code> / <code class="text-dark-green">StudentPass123!</code>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-border text-center text-xs text-secondary-text">
+            Don't have an account yet? 
+            <a href="{% url 'accounts:register' %}" class="font-bold text-primary-green hover:underline">Register your account</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(fieldId, btn) {
+        const input = document.getElementById(fieldId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4"></i>';
+        } else {
+            input.type = 'password';
+            btn.innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i>';
+        }
+        lucide.createIcons();
+    }
+</script>
+{% endblock %}

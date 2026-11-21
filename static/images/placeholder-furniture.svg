@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg_furniture" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#30221E"/>
+      <stop offset="100%" stop-color="#19110F"/>
+    </linearGradient>
+    <radialGradient id="glow_furniture" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#FB923C" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FB923C" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg_furniture)"/>
+  <circle cx="200" cy="120" r="85" fill="url(#glow_furniture)"/>
+  <g transform="translate(172, 92) scale(2.33)" fill="none" color="#FB923C">
+    <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="5" y1="18" x2="5" y2="21" stroke="currentColor" stroke-width="2"/><line x1="19" y1="18" x2="19" y2="21" stroke="currentColor" stroke-width="2"/>
+  </g>
+  <text x="200" y="185" fill="#F3F4F6" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" text-anchor="middle" letter-spacing="0.3">Desks & Study Furniture</text>
+  <g transform="translate(130, 205)">
+    <rect width="140" height="24" rx="12" fill="#FB923C" fill-opacity="0.15" stroke="#FB923C" stroke-opacity="0.35" stroke-width="1"/>
+    <circle cx="18" cy="12" r="3.5" fill="#FB923C"/>
+    <text x="75" y="16" fill="#E5E7EB" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" text-anchor="middle">ReFind Campus Item</text>
+  </g>
+</svg>

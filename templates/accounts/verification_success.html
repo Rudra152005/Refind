@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Email Verified Successfully – ReFind{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full bg-card-bg rounded-3xl border border-border p-8 sm:p-10 shadow-hover text-center space-y-6">
+        
+        <div class="w-16 h-16 rounded-3xl bg-light-green text-primary-green flex items-center justify-center mx-auto shadow-sm">
+            <i data-lucide="shield-check" class="w-9 h-9"></i>
+        </div>
+
+        <div>
+            <h1 class="text-2xl font-extrabold text-main-text font-heading">Campus Email Verified!</h1>
+            <p class="text-xs text-secondary-text mt-2 leading-relaxed">
+                Your university student status is now officially verified. You can now post listings, propose exchanges, send buy requests, and chat directly with peers.
+            </p>
+        </div>
+
+        <div class="flex flex-col gap-3 pt-2">
+            <a href="{% url 'listings:browse' %}" class="w-full py-3.5 rounded-xl bg-primary-green text-white font-heading font-semibold text-xs hover:bg-dark-green transition shadow-sm flex items-center justify-center gap-2">
+                <i data-lucide="compass" class="w-4 h-4"></i>
+                <span>Explore Campus Marketplace</span>
+            </a>
+            <a href="{% url 'accounts:dashboard' %}" class="w-full py-2.5 rounded-xl border border-border text-xs font-semibold text-secondary-text hover:bg-soft-green hover:text-primary-green transition">
+                Go to Student Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

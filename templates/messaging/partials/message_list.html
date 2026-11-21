@@ -1,0 +1,41 @@
+{% load humanize %}
+{% if thread_messages %}
+    {% for msg in thread_messages %}
+        {% if msg.sender == user %}
+            <!-- Sent Message (Right aligned, primary green) -->
+            <div class="flex flex-col items-end space-y-1">
+                <div class="max-w-md rounded-2xl rounded-tr-sm bg-primary-green text-white px-4 py-2.5 shadow-sm text-sm leading-relaxed">
+                    {{ msg.body }}
+                </div>
+                <div class="flex items-center gap-1 text-[10px] text-muted-text pr-1">
+                    <span>{{ msg.sent_at|naturaltime }}</span>
+                    {% if msg.is_read %}
+                        <i data-lucide="check-check" class="w-3 h-3 text-primary-green"></i>
+                    {% else %}
+                        <i data-lucide="check" class="w-3 h-3 text-muted-text"></i>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <!-- Received Message (Left aligned, soft white/border) -->
+            <div class="flex flex-col items-start space-y-1">
+                <div class="flex items-end gap-2 max-w-md">
+                    <div class="rounded-2xl rounded-tl-sm bg-white border border-border text-main-text px-4 py-2.5 shadow-subtle text-sm leading-relaxed">
+                        {{ msg.body }}
+                    </div>
+                </div>
+                <span class="text-[10px] text-muted-text pl-1">{{ msg.sent_at|naturaltime }}</span>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <div class="h-full flex flex-col items-center justify-center text-center p-8 text-secondary-text">
+        <div class="w-12 h-12 rounded-2xl bg-light-green text-primary-green flex items-center justify-center mb-3">
+            <i data-lucide="message-circle" class="w-6 h-6"></i>
+        </div>
+        <h4 class="font-heading font-bold text-sm text-main-text">Start the conversation</h4>
+        <p class="text-xs text-muted-text mt-1 max-w-xs">
+            Send a friendly message to {{ other_user.full_name }} to coordinate handover timing, ask questions, or make an offer.
+        </p>
+    </div>
+{% endif %}

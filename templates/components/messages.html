@@ -1,0 +1,36 @@
+{% if messages %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <div class="space-y-2">
+        {% for message in messages %}
+            <div class="flex items-center justify-between p-4 rounded-xl border text-sm font-medium transition-all shadow-subtle
+                {% if message.tags == 'success' %}
+                    bg-light-green/80 text-dark-green border-accent-green/40
+                {% elif message.tags == 'error' %}
+                    bg-red-50 text-status-error border-red-200
+                {% elif message.tags == 'warning' %}
+                    bg-amber-50 text-status-warning border-amber-200
+                {% else %}
+                    bg-sky-50 text-status-info border-sky-200
+                {% endif %}" role="alert">
+                
+                <div class="flex items-center gap-3">
+                    {% if message.tags == 'success' %}
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-primary-green shrink-0"></i>
+                    {% elif message.tags == 'error' %}
+                        <i data-lucide="alert-octagon" class="w-5 h-5 text-status-error shrink-0"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-status-warning shrink-0"></i>
+                    {% else %}
+                        <i data-lucide="info" class="w-5 h-5 text-status-info shrink-0"></i>
+                    {% endif %}
+                    <span>{{ message }}</span>
+                </div>
+
+                <button type="button" onclick="this.parentElement.remove()" class="text-muted-text hover:text-main-text p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

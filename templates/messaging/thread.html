@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Chat with {{ other_user.full_name }} – ReFind{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+    
+    <!-- Top Nav / Back -->
+    <div class="mb-4">
+        <a href="{% url 'messaging:inbox' %}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary-text hover:text-primary-green transition">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Messages Inbox
+        </a>
+    </div>
+
+    <!-- Chat Card -->
+    <div class="bg-card-bg rounded-3xl border border-border shadow-hover overflow-hidden flex flex-col h-[75vh]">
+        
+        <!-- Thread Header: Product & Interlocutor Info -->
+        <div class="p-4 sm:p-5 bg-white border-b border-border flex items-center justify-between gap-4">
+            
+            <!-- Other User Info -->
+            <div class="flex items-center gap-3 min-w-0">
+                <a href="{% url 'accounts:public_profile' other_user.id %}" class="shrink-0">
+                    {% if other_user.avatar %}
+                        <img src="{{ other_user.avatar.url }}" alt="{{ other_user.full_name }}" class="w-11 h-11 rounded-2xl object-cover border border-border">
+                    {% else %}
+                        <div class="w-11 h-11 rounded-2xl bg-light-green text-primary-green font-heading font-bold text-base flex items-center justify-center border border-border">
+                            {{ other_user.full_name|slice:":1"|default:"U"|upper }}
+                        </div>
+                    {% endif %}
+                </a>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <a href="{% url 'accounts:public_profile' other_user.id %}" class="font-heading font-bold text-sm text-main-text hover:text-primary-green transition truncate">
+                            {{ other_user.full_name }}
+                        </a>
+                        {% if other_user.is_email_verified %}
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-primary-green shrink-0" title="Verified Campus Student"></i>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-muted-text truncate">
+                        {% if other_user.hostel %}{{ other_user.hostel }} &bull;{% endif %}
+                        Campus Student
+                    </p>
+                </div>
+            </div>
+
+            <!-- Associated Product Summary Pill -->
+            <a href="{% url 'listings:detail' listing.id %}" 
+               class="p-2 sm:px-3 sm:py-2 rounded-2xl bg-soft-green border border-border hover:border-primary-green transition flex items-center gap-2.5 max-w-xs group shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-white border border-border overflow-hidden shrink-0">
+                    {% if listing.image %}
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-muted-text">
+                            <i data-lucide="package" class="w-4 h-4"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="hidden sm:block text-left min-w-0">
+                    <p class="text-xs font-bold text-main-text truncate group-hover:text-primary-green transition">{{ listing.title }}</p>
+                    <p class="text-[11px] font-semibold text-primary-green">
+                        {% if listing.listing_type == 'Sell' %}${{ listing.price|floatformat:2 }}{% else %}{{ listing.listing_type }}{% endif %}
+                        &bull; {{ listing.status }}
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Chat Messages Container with HTMX Polling (Refreshes every 5s) -->
+        <div id="messages-container" 
+             hx-get="{% url 'messaging:poll' listing.id other_user.id %}"
+             hx-trigger="every 5s"
+             hx-swap="innerHTML"
+             class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-main-bg">
+            {% include 'messaging/partials/message_list.html' %}
+        </div>
+
+        <!-- Message Input Box with HTMX Post -->
+        <div class="p-4 bg-white border-t border-border">
+            <form hx-post="{% url 'messaging:thread' listing.id other_user.id %}"
+                  hx-target="#messages-container"
+                  hx-swap="innerHTML"
+                  hx-on::after-request="this.reset(); scrollChatToBottom();"
+                  class="flex items-center gap-3">
+                {% csrf_token %}
+                <input type="text" name="body" id="chat-input" required autocomplete="off"
+                       placeholder="Type your message to {{ other_user.full_name }}..."
+                       class="flex-1 px-4 py-3 rounded-2xl border border-border bg-input-bg text-sm text-main-text focus:outline-none focus:ring-2 focus:ring-primary-green transition">
+                <button type="submit" class="px-5 py-3 rounded-2xl bg-primary-green text-white font-heading font-semibold text-sm hover:bg-dark-green transition shadow-sm flex items-center gap-2 shrink-0">
+                    <span>Send</span>
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function scrollChatToBottom() {
+        const container = document.getElementById('messages-container');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        scrollChatToBottom();
+    });
+
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'messages-container') {
+            scrollChatToBottom();
+            lucide.createIcons();
+        }
+    });
+</script>
+{% endblock %}

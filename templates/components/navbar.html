@@ -1,0 +1,253 @@
+<nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border shadow-subtle">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 md:h-20">
+            
+            <!-- Brand Logo & Campus Community -->
+            <div class="flex items-center gap-6 lg:gap-8">
+                <a href="{% url 'core:home' %}" class="flex items-center gap-2.5 group shrink-0">
+                    <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-primary-green flex items-center justify-center text-white shadow-sm group-hover:bg-dark-green transition-colors">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xl md:text-2xl font-extrabold tracking-tight text-main-text font-heading">Re<span class="text-primary-green">Find</span></span>
+                            <span class="text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-light-green text-primary-green border border-accent-green/30">Campus</span>
+                        </div>
+                        <span class="hidden sm:block text-[11px] text-muted-text -mt-1 font-medium">Campus Goods Marketplace</span>
+                    </div>
+                </a>
+
+                <!-- Primary Desktop Links -->
+                <div class="hidden lg:flex items-center gap-1 font-medium text-sm text-secondary-text">
+                    <a href="{% url 'core:home' %}" class="px-3 py-2 rounded-xl hover:text-primary-green hover:bg-soft-green transition">Home</a>
+                    <a href="{% url 'listings:browse' %}" class="px-3 py-2 rounded-xl hover:text-primary-green hover:bg-soft-green transition flex items-center gap-1.5">
+                        <i data-lucide="compass" class="w-4 h-4 text-accent-green"></i>
+                        Browse Listings
+                    </a>
+                    <a href="{% url 'listings:browse' %}?type=Sell" class="px-3 py-2 rounded-xl hover:text-primary-green hover:bg-soft-green transition">Buy</a>
+                    <a href="{% url 'listings:browse' %}?type=Exchange" class="px-3 py-2 rounded-xl hover:text-primary-green hover:bg-soft-green transition">Exchange</a>
+                    <a href="{% url 'listings:browse' %}?type=Donate" class="px-3 py-2 rounded-xl hover:text-primary-green hover:bg-soft-green transition text-primary-green font-semibold">Free / Donate</a>
+                </div>
+            </div>
+
+            <!-- Action & User Area -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                
+                <!-- Theme Toggle Button (Light/Dark Mode) -->
+                <button type="button" 
+                        onclick="toggleTheme()" 
+                        class="p-2 sm:p-2.5 rounded-xl border border-border bg-input-bg text-secondary-text hover:text-primary-green hover:bg-soft-green transition duration-200 flex items-center justify-center shrink-0 cursor-pointer shadow-subtle hover:scale-105 active:scale-95" 
+                        aria-label="Toggle dark and light theme"
+                        title="Toggle dark/light mode">
+                    <span class="theme-toggle-icon-moon flex items-center">
+                        <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                    </span>
+                    <span class="theme-toggle-icon-sun hidden items-center text-amber-400">
+                        <i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                    </span>
+                </button>
+
+                <!-- Quick Sell / Post Button -->
+                <a href="{% url 'listings:create' %}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-primary-green text-white font-semibold text-xs sm:text-sm hover:bg-dark-green shadow-sm transition hover:shadow-hover shrink-0">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>List Item</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                    <!-- Wishlist Icon with Dynamic Badge -->
+                    <a href="{% url 'listings:my_wishlist' %}" class="relative p-2 sm:p-2.5 rounded-xl text-secondary-text hover:text-primary-green hover:bg-soft-green transition" title="Saved Wishlist">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                        <span id="navbar-wishlist-count" class="{% if wishlist_count == 0 %}hidden{% endif %} absolute top-1 right-1 w-4 h-4 rounded-full bg-primary-green text-white text-[10px] font-bold flex items-center justify-center">
+                            {{ wishlist_count }}
+                        </span>
+                    </a>
+
+                    <!-- Messages Icon with Unread Badge -->
+                    <a href="{% url 'messaging:inbox' %}" class="relative p-2 sm:p-2.5 rounded-xl text-secondary-text hover:text-primary-green hover:bg-soft-green transition" title="Campus Messages">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                        {% if unread_messages_count > 0 %}
+                            <span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-status-warning text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
+                                {{ unread_messages_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <!-- User Profile Dropdown Button -->
+                    <div class="relative">
+                        <button id="user-menu-btn" 
+                                onclick="document.getElementById('user-menu-dropdown').classList.toggle('hidden'); event.stopPropagation();" 
+                                class="flex items-center gap-2 p-1.5 pl-2 sm:pl-2.5 rounded-xl border border-border bg-input-bg hover:border-accent-green hover:bg-soft-green transition">
+                            <span class="text-xs font-semibold text-main-text max-w-[90px] sm:max-w-[120px] truncate hidden sm:inline">
+                                {{ user.full_name|default:user.email }}
+                            </span>
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}" alt="{{ user.full_name }}" class="w-7 h-7 rounded-lg object-cover border border-border">
+                            {% else %}
+                                <div class="w-7 h-7 rounded-lg bg-light-green text-primary-green font-bold text-xs flex items-center justify-center">
+                                    {{ user.full_name|slice:":1"|default:"U"|upper }}
+                                </div>
+                            {% endif %}
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-muted-text"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-60 rounded-2xl bg-white border border-border shadow-hover py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                            <div class="px-4 py-2 border-b border-border/60">
+                                <div class="flex items-center justify-between gap-1 mb-1">
+                                    <p class="text-[11px] font-medium text-muted-text">Signed in as</p>
+                                    <!-- Role Indicator -->
+                                    {% if user.role == 'admin' %}
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-dark-green text-white">Campus Admin</span>
+                                    {% else %}
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-light-green text-primary-green uppercase">Student</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-xs font-bold text-main-text truncate">{{ user.email }}</p>
+                                {% if user.is_email_verified %}
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-green mt-1">
+                                        <i data-lucide="check-circle" class="w-3 h-3"></i> Verified Account
+                                    </span>
+                                {% else %}
+                                    <a href="{% url 'accounts:verify_prompt' %}" class="inline-flex items-center gap-1 text-[10px] font-semibold text-status-warning mt-1 hover:underline">
+                                        <i data-lucide="alert-circle" class="w-3 h-3"></i> Verify Email Address
+                                    </a>
+                                {% endif %}
+                            </div>
+
+                            <a href="{% url 'accounts:dashboard' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary-text hover:bg-soft-green hover:text-primary-green">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard Overview
+                            </a>
+                            <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary-text hover:bg-soft-green hover:text-primary-green">
+                                <i data-lucide="user" class="w-4 h-4"></i> My Profile
+                            </a>
+                            <a href="{% url 'listings:my_listings' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary-text hover:bg-soft-green hover:text-primary-green">
+                                <i data-lucide="package" class="w-4 h-4"></i> My Listings
+                            </a>
+                            <a href="{% url 'transactions:my_requests' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary-text hover:bg-soft-green hover:text-primary-green">
+                                <i data-lucide="send" class="w-4 h-4"></i> Sent Requests
+                            </a>
+                            <a href="{% url 'transactions:received_requests' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary-text hover:bg-soft-green hover:text-primary-green">
+                                <i data-lucide="inbox" class="w-4 h-4"></i> Received Requests
+                                {% if pending_received_requests_count > 0 %}
+                                    <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-primary-green text-white">{{ pending_received_requests_count }}</span>
+                                {% endif %}
+                            </a>
+
+                            {% if user.is_staff or user.role == 'admin' %}
+                                <div class="border-t border-border/60 my-1"></div>
+                                <div class="px-4 py-1 text-[10px] uppercase font-bold text-muted-text">Staff Control</div>
+                                <a href="{% url 'core:admin_dashboard' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-white bg-dark-green hover:bg-primary-green mx-2 rounded-xl">
+                                    <i data-lucide="shield-check" class="w-4 h-4"></i> Admin Analytics & Mod
+                                </a>
+                                <a href="/admin/" class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary-text hover:bg-soft-green">
+                                    <i data-lucide="settings" class="w-4 h-4"></i> Django Admin Panel
+                                </a>
+                            {% endif %}
+
+                            <div class="border-t border-border/60 my-1"></div>
+                            <a href="{% url 'accounts:settings' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-secondary-text hover:bg-soft-green hover:text-primary-green">
+                                <i data-lucide="sliders" class="w-4 h-4"></i> Account Settings
+                            </a>
+                            <a href="{% url 'accounts:logout' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-status-error hover:bg-red-50">
+                                <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <!-- Guest Links -->
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <a href="{% url 'accounts:login' %}" class="px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-secondary-text hover:text-primary-green hover:bg-soft-green transition">
+                            Log In
+                        </a>
+                        <a href="{% url 'accounts:register' %}" class="inline-flex px-3 sm:px-3.5 py-2 rounded-xl border border-primary-green text-xs sm:text-sm font-semibold text-primary-green hover:bg-light-green transition">
+                            Register
+                        </a>
+                    </div>
+                {% endif %}
+
+                <!-- Mobile Menu Hamburger Button -->
+                <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="lg:hidden p-2 rounded-xl text-secondary-text hover:bg-soft-green">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Responsive Menu Drawer -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-border py-4 space-y-2 animate-in fade-in duration-200">
+            
+            <!-- Mobile Dark/Light Mode Switch -->
+            <div class="p-3 bg-soft-green rounded-2xl border border-border flex items-center justify-between gap-3 mb-2">
+                <div class="flex items-center gap-2 text-xs font-semibold text-main-text">
+                    <span class="theme-toggle-icon-moon flex items-center text-secondary-text">
+                        <i data-lucide="moon" class="w-4 h-4"></i>
+                    </span>
+                    <span class="theme-toggle-icon-sun hidden items-center text-amber-400">
+                        <i data-lucide="sun" class="w-4 h-4"></i>
+                    </span>
+                    <span id="theme-mode-label">Appearance</span>
+                </div>
+                <button type="button" 
+                        onclick="toggleTheme()" 
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold bg-card-bg border border-border text-primary-green hover:bg-light-green transition shadow-sm cursor-pointer">
+                    Toggle Mode
+                </button>
+            </div>
+
+            {% if user.is_authenticated %}
+                <div class="p-3 bg-soft-green rounded-2xl border border-border flex items-center justify-between gap-3 mb-2">
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-main-text truncate">{{ user.full_name }}</p>
+                        <p class="text-[11px] text-muted-text truncate">{{ user.email }}</p>
+                    </div>
+                    {% if user.role == 'admin' %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-dark-green text-white">Admin</span>
+                    {% else %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-light-green text-primary-green uppercase">Student</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <a href="{% url 'core:home' %}" class="block px-3 py-2 rounded-xl font-medium text-sm text-main-text hover:bg-soft-green">Home</a>
+            <a href="{% url 'listings:browse' %}" class="block px-3 py-2 rounded-xl font-medium text-sm text-main-text hover:bg-soft-green">Browse Listings</a>
+            <a href="{% url 'listings:browse' %}?type=Sell" class="block px-3 py-2 rounded-xl font-medium text-sm text-main-text hover:bg-soft-green">Buy Items</a>
+            <a href="{% url 'listings:browse' %}?type=Exchange" class="block px-3 py-2 rounded-xl font-medium text-sm text-main-text hover:bg-soft-green">Exchange</a>
+            <a href="{% url 'listings:browse' %}?type=Donate" class="block px-3 py-2 rounded-xl font-medium text-sm text-primary-green font-semibold hover:bg-soft-green">Free / Donate</a>
+            
+            {% if user.is_authenticated %}
+                <div class="pt-2 border-t border-border space-y-1">
+                    <a href="{% url 'accounts:dashboard' %}" class="block px-3 py-2 rounded-xl text-sm font-semibold text-main-text hover:bg-soft-green">Dashboard</a>
+                    <a href="{% url 'listings:my_listings' %}" class="block px-3 py-2 rounded-xl text-sm text-secondary-text hover:bg-soft-green">My Listings ({{ user.listings.count }})</a>
+                    <a href="{% url 'transactions:my_requests' %}" class="block px-3 py-2 rounded-xl text-sm text-secondary-text hover:bg-soft-green">Sent Requests</a>
+                    <a href="{% url 'transactions:received_requests' %}" class="block px-3 py-2 rounded-xl text-sm text-secondary-text hover:bg-soft-green">Received Requests</a>
+                    <a href="{% url 'messaging:inbox' %}" class="block px-3 py-2 rounded-xl text-sm text-secondary-text hover:bg-soft-green">Messages</a>
+                    <a href="{% url 'listings:my_wishlist' %}" class="block px-3 py-2 rounded-xl text-sm text-secondary-text hover:bg-soft-green">Saved Wishlist</a>
+                    {% if user.is_staff or user.role == 'admin' %}
+                        <a href="{% url 'core:admin_dashboard' %}" class="block px-3 py-2 rounded-xl text-sm font-bold text-dark-green bg-light-green">Admin Analytics & Moderation</a>
+                    {% endif %}
+                    <a href="{% url 'accounts:logout' %}" class="block px-3 py-2 rounded-xl text-sm text-status-error hover:bg-red-50">Logout</a>
+                </div>
+            {% else %}
+                <div class="pt-2 border-t border-border grid grid-cols-2 gap-2">
+                    <a href="{% url 'accounts:login' %}" class="text-center py-2.5 rounded-xl border border-border text-xs font-semibold text-main-text bg-white">Log In</a>
+                    <a href="{% url 'accounts:register' %}" class="text-center py-2.5 rounded-xl bg-primary-green text-white text-xs font-semibold">Register</a>
+                </div>
+            {% endif %}
+            
+            <a href="{% url 'core:safety' %}" class="block px-3 py-2 rounded-xl font-medium text-xs text-muted-text hover:bg-soft-green pt-2">Campus Safety Guidelines</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Close user dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('user-menu-dropdown');
+        const btn = document.getElementById('user-menu-btn');
+        if (dropdown && !dropdown.classList.contains('hidden')) {
+            if (btn && !btn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    });
+</script>

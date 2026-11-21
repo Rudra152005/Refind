@@ -1,0 +1,10 @@
+<button hx-post="{% url 'listings:wishlist_toggle' listing.id %}"
+        hx-swap="outerHTML"
+        class="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center transition-colors hover:bg-white text-secondary-text hover:text-status-error group-btn"
+        title="{% if is_saved %}Remove from Saved{% else %}Save to Wishlist{% endif %}">
+    {% if is_saved %}
+        <i data-lucide="heart" class="w-4 h-4 fill-status-error text-status-error"></i>
+    {% else %}
+        <i data-lucide="heart" class="w-4 h-4 text-secondary-text"></i>
+    {% endif %}
+</button>

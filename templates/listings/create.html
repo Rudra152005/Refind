@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}Publish Campus Listing – ReFind{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <div class="mb-8">
+        <a href="{% url 'listings:browse' %}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary-text hover:text-primary-green mb-3 transition">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to marketplace
+        </a>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-main-text font-heading">List an Item for Reuse</h1>
+        <p class="text-sm text-secondary-text mt-1">Connect with students across your university campus community.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="bg-card-bg rounded-3xl border border-border p-6 sm:p-10 shadow-subtle space-y-8">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-status-error space-y-1">
+                {% for err in form.non_field_errors %}
+                    <p>{{ err }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Basic Details -->
+        <div class="space-y-5">
+            <h2 class="text-base font-bold font-heading text-main-text border-b border-border pb-3">1. Item Information</h2>
+
+            <div>
+                <label for="{{ form.title.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">
+                    Product Title *
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <p class="text-xs text-status-error mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.category.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">
+                        Category *
+                    </label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <p class="text-xs text-status-error mt-1">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.condition.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">
+                        Condition *
+                    </label>
+                    {{ form.condition }}
+                    {% if form.condition.errors %}
+                        <p class="text-xs text-status-error mt-1">{{ form.condition.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">
+                    Description & Campus Pickup Location *
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <p class="text-xs text-status-error mt-1">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Listing Type & Price Dynamics -->
+        <div class="space-y-5">
+            <h2 class="text-base font-bold font-heading text-main-text border-b border-border pb-3">2. Transaction Type & Pricing</h2>
+
+            <div>
+                <label for="{{ form.listing_type.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">
+                    How do you want to circulate this item? *
+                </label>
+                {{ form.listing_type }}
+                {% if form.listing_type.errors %}
+                    <p class="text-xs text-status-error mt-1">{{ form.listing_type.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Price Field (Shown when Sell) -->
+            <div id="price-container">
+                <label for="{{ form.price.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">
+                    Price ($) *
+                </label>
+                <div class="relative">
+                    <span class="absolute left-4 top-3 text-secondary-text font-bold">$</span>
+                    <input type="number" name="price" id="id_price" step="0.01" min="0" value="{{ form.price.value|default:'' }}"
+                           placeholder="0.00"
+                           class="w-full pl-8 pr-4 py-3 rounded-xl border border-border bg-input-bg text-main-text focus:outline-none focus:ring-2 focus:ring-primary-green transition">
+                </div>
+                <p class="text-[11px] text-muted-text mt-1">Payment is handled directly in cash or UPI/transfer upon in-person campus handover.</p>
+                {% if form.price.errors %}
+                    <p class="text-xs text-status-error mt-1">{{ form.price.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Wanted Item Description (Shown when Exchange) -->
+            <div id="exchange-container" class="hidden">
+                <label for="{{ form.wanted_item_text.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-muted-text mb-1.5">
+                    Wanted Item in Return (Exchange Proposal) *
+                </label>
+                {{ form.wanted_item_text }}
+                <p class="text-[11px] text-muted-text mt-1">Specify what goods, books, or supplies you are willing to accept in barter.</p>
+                {% if form.wanted_item_text.errors %}
+                    <p class="text-xs text-status-error mt-1">{{ form.wanted_item_text.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Donate Note (Shown when Donate) -->
+            <div id="donate-container" class="hidden p-4 rounded-xl bg-light-green border border-accent-green/40 flex items-center gap-3">
+                <i data-lucide="gift" class="w-6 h-6 text-primary-green shrink-0"></i>
+                <div class="text-xs text-dark-green leading-relaxed">
+                    <strong>Free Student Donation:</strong> This product will be listed at $0.00. Other students can submit donation requests to receive it.
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Uploads -->
+        <div class="space-y-5">
+            <h2 class="text-base font-bold font-heading text-main-text border-b border-border pb-3">3. Product Photos (Up to 3)</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Image 1 (Mandatory) -->
+                <div class="space-y-2 p-4 rounded-2xl border border-border bg-soft-green/50">
+                    <span class="block text-xs font-bold uppercase tracking-wider text-primary-green">Primary Photo *</span>
+                    {{ form.image }}
+                    <p class="text-[10px] text-muted-text">Main card photo (Max 5MB)</p>
+                    {% if form.image.errors %}
+                        <p class="text-xs text-status-error mt-1">{{ form.image.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Image 2 (Optional) -->
+                <div class="space-y-2 p-4 rounded-2xl border border-border bg-white">
+                    <span class="block text-xs font-bold uppercase tracking-wider text-muted-text">Photo 2 (Optional)</span>
+                    {{ form.image2 }}
+                    <p class="text-[10px] text-muted-text">Different angle or detail</p>
+                    {% if form.image2.errors %}
+                        <p class="text-xs text-status-error mt-1">{{ form.image2.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Image 3 (Optional) -->
+                <div class="space-y-2 p-4 rounded-2xl border border-border bg-white">
+                    <span class="block text-xs font-bold uppercase tracking-wider text-muted-text">Photo 3 (Optional)</span>
+                    {{ form.image3 }}
+                    <p class="text-[10px] text-muted-text">Accessories, receipt, or label</p>
+                    {% if form.image3.errors %}
+                        <p class="text-xs text-status-error mt-1">{{ form.image3.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="pt-6 border-t border-border flex items-center justify-end gap-4">
+            <a href="{% url 'listings:browse' %}" class="px-5 py-3 rounded-xl border border-border text-xs font-semibold text-secondary-text hover:bg-gray-50 transition">
+                Cancel
+            </a>
+            <button type="submit" class="px-8 py-3.5 rounded-xl bg-primary-green text-white font-heading font-semibold text-sm hover:bg-dark-green transition shadow-sm flex items-center gap-2">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                <span>Publish Listing</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateListingTypeFields() {
+        const typeSelect = document.getElementById('id_listing_type');
+        const priceContainer = document.getElementById('price-container');
+        const exchangeContainer = document.getElementById('exchange-container');
+        const donateContainer = document.getElementById('donate-container');
+        const priceInput = document.getElementById('id_price');
+
+        if (!typeSelect) return;
+
+        const val = typeSelect.value;
+        if (val === 'Sell') {
+            priceContainer.classList.remove('hidden');
+            exchangeContainer.classList.add('hidden');
+            donateContainer.classList.add('hidden');
+            if (priceInput) priceInput.required = true;
+        } else if (val === 'Exchange') {
+            priceContainer.classList.add('hidden');
+            exchangeContainer.classList.remove('hidden');
+            donateContainer.classList.add('hidden');
+            if (priceInput) priceInput.required = false;
+        } else if (val === 'Donate') {
+            priceContainer.classList.add('hidden');
+            exchangeContainer.classList.add('hidden');
+            donateContainer.classList.remove('hidden');
+            if (priceInput) {
+                priceInput.value = '0.00';
+                priceInput.required = false;
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeSelect = document.getElementById('id_listing_type');
+        if (typeSelect) {
+            typeSelect.addEventListener('change', updateListingTypeFields);
+            updateListingTypeFields();
+        }
+    });
+</script>
+{% endblock %}

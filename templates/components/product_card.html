@@ -1,0 +1,122 @@
+{% load humanize static %}
+<div class="group bg-card-bg rounded-2xl border border-border hover:border-accent-green/60 shadow-subtle hover:shadow-hover transition-all duration-300 flex flex-col overflow-hidden relative">
+    
+    <!-- Image & Badges -->
+    <div class="relative w-full aspect-[4/3] bg-soft-green overflow-hidden">
+        <a href="{% url 'listings:detail' listing.id %}" class="block w-full h-full relative">
+            {% if listing.image %}
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='{% if listing.category == 'Books' %}{% static 'images/placeholder-books.svg' %}{% elif listing.category == 'Electronics' %}{% static 'images/placeholder-electronics.svg' %}{% elif listing.category == 'Cycles' %}{% static 'images/placeholder-cycles.svg' %}{% elif listing.category == 'Hostel Essentials' %}{% static 'images/placeholder-hostel.svg' %}{% elif listing.category == 'Furniture' %}{% static 'images/placeholder-furniture.svg' %}{% elif listing.category == 'Sports' %}{% static 'images/placeholder-sports.svg' %}{% else %}{% static 'images/placeholder-default.svg' %}{% endif %}';">
+            {% else %}
+                <img src="{% if listing.category == 'Books' %}{% static 'images/placeholder-books.svg' %}{% elif listing.category == 'Electronics' %}{% static 'images/placeholder-electronics.svg' %}{% elif listing.category == 'Cycles' %}{% static 'images/placeholder-cycles.svg' %}{% elif listing.category == 'Hostel Essentials' %}{% static 'images/placeholder-hostel.svg' %}{% elif listing.category == 'Furniture' %}{% static 'images/placeholder-furniture.svg' %}{% elif listing.category == 'Sports' %}{% static 'images/placeholder-sports.svg' %}{% else %}{% static 'images/placeholder-default.svg' %}{% endif %}"
+                     alt="{{ listing.title }}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            {% endif %}
+        </a>
+
+        <!-- Top Badges Overlay -->
+        <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 z-10">
+            <!-- Listing Type Badge -->
+            {% if listing.listing_type == 'Sell' %}
+                <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold font-heading bg-dark-green text-white shadow-sm flex items-center gap-1">
+                    ${{ listing.price|floatformat:2 }}
+                </span>
+            {% elif listing.listing_type == 'Exchange' %}
+                <span class="px-2.5 py-1 rounded-lg text-xs font-bold font-heading bg-[#4385B5] text-white shadow-sm flex items-center gap-1">
+                    <i data-lucide="repeat" class="w-3 h-3"></i> Exchange
+                </span>
+            {% elif listing.listing_type == 'Donate' %}
+                <span class="px-2.5 py-1 rounded-lg text-xs font-bold font-heading bg-primary-green text-white shadow-sm flex items-center gap-1">
+                    <i data-lucide="gift" class="w-3 h-3"></i> Free / Donate
+                </span>
+            {% endif %}
+
+            <!-- Condition Badge -->
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-white/90 dark:bg-card-bg/90 backdrop-blur-sm text-main-text border border-border shadow-sm">
+                {{ listing.condition }}
+            </span>
+        </div>
+
+        <!-- Wishlist Button (HTMX Toggle) -->
+        {% if user.is_authenticated and user != listing.owner %}
+            <div class="absolute top-2.5 right-2.5 z-10">
+                <button hx-post="{% url 'listings:wishlist_toggle' listing.id %}"
+                        hx-swap="outerHTML"
+                        class="w-8 h-8 rounded-full bg-white/90 dark:bg-card-bg/90 backdrop-blur-sm shadow-sm flex items-center justify-center transition-colors hover:bg-white text-secondary-text hover:text-status-error group-btn"
+                        title="Save to Wishlist">
+                    {% if listing in user.saved_listings.all %}
+                        <i data-lucide="heart" class="w-4 h-4 fill-status-error text-status-error"></i>
+                    {% else %}
+                        <i data-lucide="heart" class="w-4 h-4 text-secondary-text"></i>
+                    {% endif %}
+                </button>
+            </div>
+        {% endif %}
+
+        <!-- Status Tag if not Available -->
+        {% if listing.status != 'Available' %}
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+                <span class="px-3 py-1.5 rounded-xl font-heading font-bold text-xs uppercase tracking-wider text-white shadow-md
+                    {% if listing.status == 'Reserved' %} bg-status-warning
+                    {% elif listing.status == 'Sold' %} bg-status-error
+                    {% elif listing.status == 'Exchanged' %} bg-status-info
+                    {% else %} bg-gray-700
+                    {% endif %}">
+                    {{ listing.status }}
+                </span>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Product Details Content -->
+    <div class="p-4 flex-grow flex flex-col justify-between">
+        <div>
+            <!-- Category & Date -->
+            <div class="flex items-center justify-between text-xs text-muted-text mb-1.5">
+                <span class="font-medium text-primary-green hover:underline">{{ listing.category }}</span>
+                <span>{{ listing.created_at|naturaltime }}</span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="font-heading font-bold text-base text-main-text leading-snug line-clamp-2 group-hover:text-primary-green transition-colors">
+                <a href="{% url 'listings:detail' listing.id %}">{{ listing.title }}</a>
+            </h3>
+
+            <!-- Exchange target description if applicable -->
+            {% if listing.listing_type == 'Exchange' and listing.wanted_item_text %}
+                <p class="text-xs text-secondary-text mt-1.5 line-clamp-1 italic bg-soft-green/70 px-2 py-1 rounded-md border border-border/50">
+                    <span class="font-semibold text-main-text">Wants:</span> {{ listing.wanted_item_text }}
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- Seller Footer -->
+        <div class="mt-4 pt-3 border-t border-border flex items-center justify-between">
+            <a href="{% url 'accounts:public_profile' listing.owner.id %}" class="flex items-center gap-2 group/owner">
+                {% if listing.owner.avatar %}
+                    <img src="{{ listing.owner.avatar.url }}" alt="{{ listing.owner.full_name }}" class="w-6 h-6 rounded-full object-cover border border-border">
+                {% else %}
+                    <div class="w-6 h-6 rounded-full bg-light-green text-primary-green font-bold text-[10px] flex items-center justify-center">
+                        {{ listing.owner.full_name|slice:":1"|default:"U"|upper }}
+                    </div>
+                {% endif %}
+                <span class="text-xs font-semibold text-secondary-text group-hover/owner:text-primary-green transition truncate max-w-[110px]">
+                    {{ listing.owner.full_name }}
+                </span>
+                {% if listing.owner.is_email_verified %}
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5 text-primary-green" title="Verified Campus Student"></i>
+                {% endif %}
+            </a>
+
+            <!-- Rating badge if available -->
+            {% if listing.owner.average_rating %}
+                <div class="flex items-center gap-1 text-xs font-bold text-status-warning bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-200/50 dark:border-amber-800/40">
+                    <i data-lucide="star" class="w-3 h-3 fill-status-warning"></i>
+                    <span class="font-heading font-bold">{{ listing.owner.average_rating }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

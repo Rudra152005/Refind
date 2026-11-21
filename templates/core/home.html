@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+{% load humanize static %}
+
+{% block title %}ReFind – Campus-Based Pre-Owned Goods Marketplace{% endblock %}
+
+{% block content %}
+<!-- =========================================================================
+     SECTION 1: FULL-SCREEN CINEMATIC HERO (CENTERED, TRANSPARENT & CLEAN)
+     ========================================================================= -->
+<section id="hero-cinema-section" class="relative min-h-[660px] lg:min-h-[760px] flex items-center justify-center overflow-hidden bg-[#070D09] text-white">
+    
+    <!-- 1. Background Promotional Video (Streamed from Django Backend) -->
+    <video id="hero-bg-video"
+           autoplay
+           muted
+           loop
+           playsinline
+           preload="auto"
+           class="absolute inset-0 w-full h-full object-cover object-center z-0 transition-opacity duration-700">
+        <!-- Direct Django Backend Streaming Route with Anti-Cache Token -->
+        <source src="{% url 'core:promo_video' %}?v=20261121_v4" type="video/mp4">
+        <!-- Static Fallback Routes -->
+        <source src="{% static 'videos/campus-promo.mp4' %}" type="video/mp4">
+        <source src="{% static 'videos/refind-promo.mp4' %}" type="video/mp4">
+    </video>
+
+    <!-- 2. Clean Cinematic Ambient Scrim (Guarantees text readability while keeping video 100% clear) -->
+    <div class="absolute inset-0 bg-black/40 z-10 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-10 pointer-events-none"></div>
+
+    <!-- 3. Minimal Ambient Video Controller Pill (Arranged properly in bottom-right corner) -->
+    <div class="absolute bottom-6 right-6 z-30 flex items-center gap-2 pointer-events-auto">
+        <div class="flex items-center gap-2 px-3 py-2 rounded-full bg-black/55 hover:bg-black/75 backdrop-blur-xl border border-white/20 shadow-2xl transition-all">
+            <!-- Play / Pause -->
+            <button id="hero-play-toggle-btn" 
+                    type="button" 
+                    title="Play / Pause Video" 
+                    aria-label="Toggle Play"
+                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-primary-green text-white flex items-center justify-center transition cursor-pointer">
+                <i id="hero-play-icon" data-lucide="pause" class="w-4 h-4 fill-current"></i>
+            </button>
+
+            <!-- Sound Mute / Unmute -->
+            <button id="hero-sound-toggle-btn" 
+                    type="button" 
+                    title="Mute / Unmute Sound" 
+                    aria-label="Toggle Sound"
+                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-primary-green text-white flex items-center justify-center transition cursor-pointer">
+                <i id="hero-sound-icon" data-lucide="volume-x" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Live Timer -->
+            <span class="font-mono text-[11px] text-gray-300 font-semibold px-1.5 hidden sm:inline">
+                <span id="hero-time-current" class="text-emerald-400">0:00</span> / 0:20
+            </span>
+
+            <!-- Fullscreen -->
+            <button id="hero-fullscreen-btn" 
+                    type="button" 
+                    title="Watch Video Fullscreen" 
+                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition cursor-pointer">
+                <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. Central Transparent Hero Content (Unified, Centered & Clean) -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 relative z-20 text-center space-y-6">
+        
+        <!-- Campus Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 text-emerald-300 text-xs font-bold tracking-wider uppercase shadow-lg">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            <span>University-Exclusive Marketplace</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>
+        </div>
+
+        <!-- Primary Heading (Transparent, Centered, High Impact) -->
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight font-heading leading-[1.12] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
+            Give Your Pre-Loved Products a <br class="hidden sm:inline">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-[#2ECC71] to-emerald-200">New Beginning.</span>
+        </h1>
+
+        <!-- Supporting Description -->
+        <p class="text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] font-sans">
+            Discover affordable pre-owned products, connect with fellow students and make campus shopping more sustainable.
+        </p>
+
+        <!-- Two Primary Action Buttons (Centered) -->
+        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
+            <a href="{% url 'listings:browse' %}" 
+               class="px-8 py-4 rounded-2xl bg-gradient-to-r from-primary-green to-dark-green hover:from-emerald-500 hover:to-emerald-700 text-white font-heading font-bold text-sm sm:text-base transition-all duration-200 shadow-2xl shadow-emerald-950/80 hover:-translate-y-0.5 flex items-center gap-2.5 shrink-0 cursor-pointer border border-emerald-400/40">
+                <i data-lucide="compass" class="w-5 h-5"></i>
+                <span>Explore Products</span>
+            </a>
+            
+            <a href="{% url 'listings:create' %}" 
+               class="px-8 py-4 rounded-2xl bg-black/40 hover:bg-black/60 text-white font-heading font-bold text-sm sm:text-base transition-all duration-200 shadow-xl hover:-translate-y-0.5 flex items-center gap-2.5 shrink-0 cursor-pointer backdrop-blur-xl border border-white/30 hover:border-emerald-400/60">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
+                <span>Start Selling</span>
+            </a>
+        </div>
+
+        <!-- Sleek Transparent Campus Search Bar -->
+        <div class="pt-2 max-w-xl mx-auto">
+            <form action="{% url 'listings:browse' %}" method="get" class="relative">
+                <div class="flex items-center bg-black/45 hover:bg-black/60 focus-within:bg-black/75 backdrop-blur-xl p-1.5 sm:p-2 rounded-2xl border border-white/25 focus-within:border-emerald-400 transition-all shadow-2xl">
+                    <div class="pl-3 text-emerald-400">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </div>
+                    <input type="text" name="q" placeholder="Search textbooks, calculators, cycles, laptops..." 
+                           class="w-full px-3 py-2 text-sm text-white placeholder-gray-300 bg-transparent focus:outline-none">
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-primary-green hover:bg-emerald-600 text-white font-heading font-bold text-xs sm:text-sm transition shrink-0 flex items-center gap-1.5 shadow-md">
+                        <span>Search</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Popular Shortcuts -->
+                <div class="flex flex-wrap items-center justify-center gap-2 pt-3 text-[11px] text-gray-300">
+                    <span class="font-semibold text-gray-300 mr-1">Hot:</span>
+                    <a href="{% url 'listings:browse' %}?q=calculator" class="px-2.5 py-1 rounded-lg bg-black/40 hover:bg-emerald-500/30 hover:text-emerald-300 border border-white/15 backdrop-blur-md transition">#Calculators</a>
+                    <a href="{% url 'listings:browse' %}?category=Books" class="px-2.5 py-1 rounded-lg bg-black/40 hover:bg-emerald-500/30 hover:text-emerald-300 border border-white/15 backdrop-blur-md transition">#Textbooks</a>
+                    <a href="{% url 'listings:browse' %}?category=Cycles" class="px-2.5 py-1 rounded-lg bg-black/40 hover:bg-emerald-500/30 hover:text-emerald-300 border border-white/15 backdrop-blur-md transition">#Bicycles</a>
+                    <a href="{% url 'listings:browse' %}?category=Electronics" class="px-2.5 py-1 rounded-lg bg-black/40 hover:bg-emerald-500/30 hover:text-emerald-300 border border-white/15 backdrop-blur-md transition">#Electronics</a>
+                    <a href="{% url 'listings:browse' %}?category=Hostel Essentials" class="px-2.5 py-1 rounded-lg bg-black/40 hover:bg-emerald-500/30 hover:text-emerald-300 border border-white/15 backdrop-blur-md transition">#Hostel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Trust Indicators (Centered Transparent Pill) -->
+        <div class="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-gray-200">
+            <div class="flex items-center gap-1.5 drop-shadow">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                <span>Verified Students</span>
+            </div>
+            <div class="flex items-center gap-1.5 drop-shadow">
+                <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
+                <span>In-Person Handover</span>
+            </div>
+            <div class="flex items-center gap-1.5 drop-shadow">
+                <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+                <span>0% Commission</span>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================================
+     SECTION 2: LIVE CAMPUS ACTIVITY TICKER & TRUST RIBBON
+     ========================================================================= -->
+<section class="border-b border-border bg-card-bg py-6 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-border">
+            
+            <!-- Stat 1 -->
+            <div class="flex items-center gap-3.5 pt-4 md:pt-0">
+                <div class="w-12 h-12 rounded-2xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-heading font-bold text-base text-main-text">100% Student Verified</h4>
+                    <p class="text-xs text-secondary-text">Campus email authentication</p>
+                </div>
+            </div>
+
+            <!-- Stat 2 -->
+            <div class="flex items-center gap-3.5 pt-4 md:pt-0 md:pl-6">
+                <div class="w-12 h-12 rounded-2xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-heading font-bold text-base text-main-text">In-Person Handover</h4>
+                    <p class="text-xs text-secondary-text">Zero shipping, meet at library</p>
+                </div>
+            </div>
+
+            <!-- Stat 3 -->
+            <div class="flex items-center gap-3.5 pt-4 md:pt-0 md:pl-6">
+                <div class="w-12 h-12 rounded-2xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-heading font-bold text-base text-main-text">0% Commission</h4>
+                    <p class="text-xs text-secondary-text">100% free for campus students</p>
+                </div>
+            </div>
+
+            <!-- Stat 4 -->
+            <div class="flex items-center gap-3.5 pt-4 md:pt-0 md:pl-6">
+                <div class="w-12 h-12 rounded-2xl bg-light-green text-primary-green flex items-center justify-center shrink-0">
+                    <i data-lucide="repeat" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-heading font-bold text-base text-main-text">{{ total_items_reused }} Goods Saved</h4>
+                    <p class="text-xs text-secondary-text">Diverted from campus waste</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================================
+     SECTION 3: REIMAGINED INTERACTIVE CATEGORY DISCOVERY GRID
+     ========================================================================= -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-primary-green">Curated Directory</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-main-text font-heading mt-1">Explore by Category</h2>
+            <p class="text-sm text-secondary-text mt-1">Find exactly what you need for this semester from senior and fellow students.</p>
+        </div>
+        <a href="{% url 'listings:browse' %}" class="inline-flex items-center gap-1.5 text-sm font-bold text-primary-green hover:text-dark-green group">
+            <span>View All Products</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Books & Academic Materials -->
+        <a href="{% url 'listings:browse' %}?category=Books" 
+           class="p-6 rounded-3xl bg-card-bg border border-border hover:border-accent-green hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-primary-green flex items-center justify-center group-hover:bg-primary-green group-hover:text-white transition-colors shadow-sm">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-bold font-mono px-2.5 py-1 rounded-full bg-soft-green text-primary-green">
+                    {{ category_counts.Books|default:0 }}
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-primary-green transition-colors">Books & Materials</h3>
+                <p class="text-xs text-muted-text mt-1">Textbooks, manuals, lecture notes</p>
+            </div>
+        </a>
+
+        <!-- Electronics -->
+        <a href="{% url 'listings:browse' %}?category=Electronics" 
+           class="p-6 rounded-3xl bg-card-bg border border-border hover:border-accent-green hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center group-hover:bg-sky-600 group-hover:text-white transition-colors shadow-sm">
+                    <i data-lucide="laptop" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-bold font-mono px-2.5 py-1 rounded-full bg-soft-green text-primary-green">
+                    {{ category_counts.Electronics|default:0 }}
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-primary-green transition-colors">Electronics & Gadgets</h3>
+                <p class="text-xs text-muted-text mt-1">Laptops, calculators, USB hubs</p>
+            </div>
+        </a>
+
+        <!-- Cycles & Campus Transport -->
+        <a href="{% url 'listings:browse' %}?category=Cycles" 
+           class="p-6 rounded-3xl bg-card-bg border border-border hover:border-accent-green hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors shadow-sm">
+                    <i data-lucide="bike" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-bold font-mono px-2.5 py-1 rounded-full bg-soft-green text-primary-green">
+                    {{ category_counts.Cycles|default:0 }}
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-primary-green transition-colors">Bicycles & Commute</h3>
+                <p class="text-xs text-muted-text mt-1">Campus bikes, locks, helmets</p>
+            </div>
+        </a>
+
+        <!-- Hostel Essentials -->
+        <a href="{% url 'listings:browse' %}?category=Hostel Essentials" 
+           class="p-6 rounded-3xl bg-card-bg border border-border hover:border-accent-green hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors shadow-sm">
+                    <i data-lucide="lamp" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-bold font-mono px-2.5 py-1 rounded-full bg-soft-green text-primary-green">
+                    {{ category_counts.Hostel_Essentials|default:0 }}
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-primary-green transition-colors">Hostel Essentials</h3>
+                <p class="text-xs text-muted-text mt-1">Bedding, study lamps, kettles</p>
+            </div>
+        </a>
+
+        <!-- Furniture & Study Desks -->
+        <a href="{% url 'listings:browse' %}?category=Furniture" 
+           class="p-6 rounded-3xl bg-card-bg border border-border hover:border-accent-green hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-colors shadow-sm">
+                    <i data-lucide="armchair" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-bold font-mono px-2.5 py-1 rounded-full bg-soft-green text-primary-green">
+                    {{ category_counts.Furniture|default:0 }}
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-primary-green transition-colors">Furniture & Desks</h3>
+                <p class="text-xs text-muted-text mt-1">Study tables, chairs, bookshelves</p>
+            </div>
+        </a>
+
+        <!-- Sports & Fitness -->
+        <a href="{% url 'listings:browse' %}?category=Sports" 
+           class="p-6 rounded-3xl bg-card-bg border border-border hover:border-accent-green hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-sm">
+                    <i data-lucide="trophy" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-bold font-mono px-2.5 py-1 rounded-full bg-soft-green text-primary-green">
+                    {{ category_counts.Sports|default:0 }}
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-primary-green transition-colors">Sports & Fitness</h3>
+                <p class="text-xs text-muted-text mt-1">Rackets, gym weights, balls</p>
+            </div>
+        </a>
+
+        <!-- Student Free Donations -->
+        <a href="{% url 'listings:browse' %}?type=Donate" 
+           class="p-6 rounded-3xl bg-emerald-950/20 dark:bg-emerald-950/40 border-2 border-primary-green hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-primary-green text-white flex items-center justify-center shadow-md">
+                    <i data-lucide="gift" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-primary-green text-white uppercase tracking-wider">
+                    Free
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-primary-green transition-colors">Student Donations</h3>
+                <p class="text-xs text-primary-green font-semibold mt-1">100% Free gifts for peers</p>
+            </div>
+        </a>
+
+        <!-- Barter & Exchange -->
+        <a href="{% url 'listings:browse' %}?type=Exchange" 
+           class="p-6 rounded-3xl bg-blue-950/20 dark:bg-blue-950/40 border-2 border-[#4385B5] hover:shadow-hover transition-all duration-300 group flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-13 h-13 rounded-2xl bg-[#4385B5] text-white flex items-center justify-center shadow-md">
+                    <i data-lucide="repeat" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-[#4385B5] text-white uppercase tracking-wider">
+                    Barter
+                </span>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-base text-main-text group-hover:text-[#4385B5] transition-colors">Barter & Exchange</h3>
+                <p class="text-xs text-[#4385B5] font-semibold mt-1">Trade your unused goods</p>
+            </div>
+        </a>
+    </div>
+</section>
+
+
+<!-- =========================================================================
+     SECTION 4: FRESH ON CAMPUS MARKETPLACE SHOWCASE
+     ========================================================================= -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+        <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-primary-green">Fresh Arrivals</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-main-text font-heading mt-1">Recently Listed On Campus</h2>
+            <p class="text-sm text-secondary-text mt-1">Direct from students at your university. Instant campus meetups.</p>
+        </div>
+        <a href="{% url 'listings:browse' %}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-card-bg border border-border text-xs font-bold text-main-text hover:border-primary-green hover:text-primary-green transition shadow-sm">
+            <span>Explore all ({{ total_active_listings }})</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+    </div>
+
+    {% if recent_listings %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for listing in recent_listings %}
+                {% include 'components/product_card.html' with listing=listing %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-card-bg rounded-3xl border border-border p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-soft-green text-primary-green flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="package-search" class="w-8 h-8"></i>
+            </div>
+            <h3 class="font-heading font-bold text-lg text-main-text">No active listings yet</h3>
+            <p class="text-sm text-secondary-text mt-1 max-w-sm mx-auto">Be the first student to publish a textbook, cycle, or electronic gadget on ReFind!</p>
+            <a href="{% url 'listings:create' %}" class="inline-flex items-center gap-2 mt-5 px-6 py-3 rounded-2xl bg-primary-green text-white font-bold text-sm hover:bg-dark-green transition shadow-md">
+                <i data-lucide="plus" class="w-4 h-4"></i> Create First Listing
+            </a>
+        </div>
+    {% endif %}
+</section>
+
+
+<!-- =========================================================================
+     SECTION 5: HOW CAMPUS REUSE WORKS (3-STEP VISUAL PROGRESSION)
+     ========================================================================= -->
+<section class="border-y border-border bg-card-bg py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <span class="text-xs font-bold uppercase tracking-wider text-primary-green">Zero Hassle</span>
+            <h2 class="text-3xl font-extrabold text-main-text font-heading mt-1">How Campus Reuse Works</h2>
+            <p class="text-sm text-secondary-text mt-2">Designed specifically for university students with direct on-campus handovers.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="p-8 rounded-3xl bg-soft-green/50 border border-border hover:border-accent-green transition-all space-y-4">
+                <div class="w-14 h-14 rounded-2xl bg-primary-green text-white flex items-center justify-center font-heading font-extrabold text-xl shadow-md">
+                    1
+                </div>
+                <h3 class="font-heading font-bold text-lg text-main-text">List or Browse</h3>
+                <p class="text-sm text-secondary-text leading-relaxed">
+                    Snap photos of your unused course books, scientific calculator, or hostel essentials in 60 seconds. Or discover deals from peers.
+                </p>
+                <div class="text-xs font-semibold text-primary-green flex items-center gap-1.5 pt-2">
+                    <i data-lucide="check" class="w-4 h-4"></i> No shipping, zero listing fees
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="p-8 rounded-3xl bg-soft-green/50 border border-border hover:border-accent-green transition-all space-y-4">
+                <div class="w-14 h-14 rounded-2xl bg-primary-green text-white flex items-center justify-center font-heading font-extrabold text-xl shadow-md">
+                    2
+                </div>
+                <h3 class="font-heading font-bold text-lg text-main-text">Connect & Chat</h3>
+                <p class="text-sm text-secondary-text leading-relaxed">
+                    Submit a cash offer, propose an item exchange, or claim a donated item. Message your peer in real-time to pick a handover spot.
+                </p>
+                <div class="text-xs font-semibold text-primary-green flex items-center gap-1.5 pt-2">
+                    <i data-lucide="check" class="w-4 h-4"></i> Secure student-to-student messaging
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="p-8 rounded-3xl bg-soft-green/50 border border-border hover:border-accent-green transition-all space-y-4">
+                <div class="w-14 h-14 rounded-2xl bg-primary-green text-white flex items-center justify-center font-heading font-extrabold text-xl shadow-md">
+                    3
+                </div>
+                <h3 class="font-heading font-bold text-lg text-main-text">Meet & Exchange</h3>
+                <p class="text-sm text-secondary-text leading-relaxed">
+                    Meet safely at the campus library, student center, or canteen. Inspect the product before finalizing payment or trade.
+                </p>
+                <div class="text-xs font-semibold text-primary-green flex items-center gap-1.5 pt-2">
+                    <i data-lucide="check" class="w-4 h-4"></i> Safe campus handovers guaranteed
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================================
+     SECTION 6: SUSTAINABILITY & COMMUNITY IMPACT BENTO BANNER
+     ========================================================================= -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="bg-gradient-to-br from-primary-green via-dark-green to-[#0E351F] rounded-3xl p-8 sm:p-14 text-white shadow-2xl relative overflow-hidden">
+        
+        <!-- Subtle Background Pattern -->
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+            <div class="lg:col-span-7 space-y-5">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 text-white text-xs font-bold backdrop-blur-md">
+                    <i data-lucide="leaf" class="w-4 h-4 text-emerald-300"></i>
+                    <span>Campus Sustainability & Savings</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading leading-tight">
+                    "Find it again.<br>Give it a new beginning."
+                </h2>
+                <p class="text-base text-white/90 leading-relaxed max-w-lg">
+                    Every semester, graduating students discard functional furniture, lab gear, and textbooks while incoming freshmen buy brand new at full price. ReFind bridges that gap.
+                </p>
+                <div class="pt-3">
+                    <a href="{% url 'listings:create' %}" class="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-white text-dark-green font-heading font-bold text-sm sm:text-base hover:bg-soft-green transition shadow-lg hover:-translate-y-0.5">
+                        <span>List an Item for Reuse</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Impact Statistics Grid -->
+            <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+                <div class="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 text-center">
+                    <div class="text-3xl sm:text-4xl font-extrabold font-heading">{{ total_students }}</div>
+                    <div class="text-xs font-semibold text-white/80 mt-1">Campus Students</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 text-center">
+                    <div class="text-3xl sm:text-4xl font-extrabold font-heading">{{ total_active_listings }}</div>
+                    <div class="text-xs font-semibold text-white/80 mt-1">Active Goods</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 text-center">
+                    <div class="text-3xl sm:text-4xl font-extrabold font-heading">{{ total_items_reused }}</div>
+                    <div class="text-xs font-semibold text-white/80 mt-1">Items Reused & Saved</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 text-center">
+                    <div class="text-3xl sm:text-4xl font-extrabold font-heading">100%</div>
+                    <div class="text-xs font-semibold text-white/80 mt-1">Campus Meetup</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- =========================================================================
+     HERO BACKGROUND VIDEO INTERACTIVE CONTROLLER SCRIPT
+     ========================================================================= -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const video = document.getElementById('hero-bg-video');
+        const playBtn = document.getElementById('hero-play-toggle-btn');
+        const playIcon = document.getElementById('hero-play-icon');
+        const soundBtn = document.getElementById('hero-sound-toggle-btn');
+        const soundIcon = document.getElementById('hero-sound-icon');
+        const timeCurrent = document.getElementById('hero-time-current');
+        const fullscreenBtn = document.getElementById('hero-fullscreen-btn');
+
+        if (!video) return;
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        function setPlayState(isPlaying) {
+            if (!playBtn) return;
+            if (isPlaying) {
+                playBtn.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i>';
+                playBtn.setAttribute('title', 'Pause Video');
+            } else {
+                playBtn.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current ml-0.5"></i>';
+                playBtn.setAttribute('title', 'Play Video');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // Toggle Video Play / Pause
+        if (playBtn) {
+            playBtn.addEventListener('click', function() {
+                if (video.paused || video.ended) {
+                    video.play().then(() => setPlayState(true)).catch(() => setPlayState(false));
+                } else {
+                    video.pause();
+                    setPlayState(false);
+                }
+            });
+        }
+
+        // Toggle Audio Mute / Unmute
+        if (soundBtn) {
+            soundBtn.addEventListener('click', function() {
+                video.muted = !video.muted;
+                if (video.muted) {
+                    soundBtn.innerHTML = '<i data-lucide="volume-x" class="w-4 h-4"></i>';
+                    soundBtn.setAttribute('title', 'Unmute Sound');
+                } else {
+                    soundBtn.innerHTML = '<i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>';
+                    soundBtn.setAttribute('title', 'Mute Sound');
+                }
+                if (window.lucide) lucide.createIcons();
+            });
+        }
+
+        // Fullscreen Toggle
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', function() {
+                const section = document.getElementById('hero-cinema-section');
+                if (!document.fullscreenElement) {
+                    if (section && section.requestFullscreen) {
+                        section.requestFullscreen();
+                    } else if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+        }
+
+        // Time Update Loop
+        video.addEventListener('timeupdate', function() {
+            const ct = video.currentTime;
+            if (timeCurrent) timeCurrent.textContent = formatTime(ct);
+        });
+
+        // Accessibility Reduced Motion Check
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            video.pause();
+            setPlayState(false);
+        } else {
+            video.play().then(() => setPlayState(true)).catch(() => setPlayState(false));
+        }
+
+        video.addEventListener('play', () => setPlayState(true));
+        video.addEventListener('pause', () => setPlayState(false));
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ student.full_name }} – Campus Profile & Seller Reviews{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- Profile Header Card -->
+    <div class="bg-card-bg rounded-3xl border border-border p-6 sm:p-10 shadow-subtle mb-10">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div class="flex items-center gap-5">
+                {% if student.avatar %}
+                    <img src="{{ student.avatar.url }}" alt="{{ student.full_name }}" class="w-20 h-20 rounded-2xl object-cover border-2 border-primary-green/30">
+                {% else %}
+                    <div class="w-20 h-20 rounded-2xl bg-light-green text-primary-green font-heading font-extrabold text-3xl flex items-center justify-center border-2 border-primary-green/30">
+                        {{ student.full_name|slice:":1"|default:"U"|upper }}
+                    </div>
+                {% endif %}
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-2xl font-extrabold text-main-text font-heading">{{ student.full_name }}</h1>
+                        {% if student.is_email_verified %}
+                            <span class="inline-flex items-center gap-1 text-xs font-bold text-primary-green bg-light-green px-2 py-0.5 rounded-full border border-accent-green/30">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Verified Student
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% if student.hostel %}
+                        <p class="text-xs text-secondary-text flex items-center gap-1.5">
+                            <i data-lucide="home" class="w-3.5 h-3.5 text-muted-text"></i>
+                            {{ student.hostel }}
+                        </p>
+                    {% endif %}
+                    <p class="text-[11px] text-muted-text">Member since {{ student.date_joined|date:"F Y" }}</p>
+                </div>
+            </div>
+
+            <!-- Stats Pill -->
+            <div class="flex items-center gap-6 sm:border-l sm:border-border sm:pl-8 text-center">
+                <div>
+                    <div class="text-2xl font-extrabold font-heading text-main-text">{{ listings.count }}</div>
+                    <div class="text-[11px] text-muted-text font-medium">Active Goods</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-extrabold font-heading text-primary-green">{{ student.completed_transactions_count }}</div>
+                    <div class="text-[11px] text-muted-text font-medium">Reused / Sold</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-extrabold font-heading text-status-warning flex items-center justify-center gap-1">
+                        <i data-lucide="star" class="w-5 h-5 fill-status-warning"></i>
+                        <span>{{ student.average_rating|default:"5.0" }}</span>
+                    </div>
+                    <div class="text-[11px] text-muted-text font-medium">Rating ({{ student.total_ratings_count }})</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Listings by this Student -->
+    <div class="space-y-6 mb-16">
+        <h2 class="text-xl font-extrabold text-main-text font-heading">Active Listings from {{ student.full_name }}</h2>
+        {% if listings %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for item in listings %}
+                    {% include 'components/product_card.html' with listing=item %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-card-bg rounded-2xl border border-border p-8 text-center text-xs text-muted-text">
+                {{ student.full_name }} does not currently have any active listings.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Peer Reviews -->
+    <div class="bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-6">
+        <div class="border-b border-border pb-4 flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-extrabold text-main-text font-heading">Peer Reviews & Seller Feedback</h2>
+                <p class="text-xs text-secondary-text">Feedback left by students who completed handovers with {{ student.full_name }}.</p>
+            </div>
+            <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-status-warning border border-amber-200">
+                ★ {{ student.average_rating|default:"5.0" }} / 5.0 ({{ reviews.count }} reviews)
+            </span>
+        </div>
+
+        {% if reviews %}
+            <div class="space-y-4">
+                {% for rev in reviews %}
+                    <div class="p-4 rounded-2xl bg-soft-green/50 border border-border space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-main-text">{{ rev.requester.full_name }}</span>
+                            <span class="text-muted-text">{{ rev.updated_at|naturaltime }}</span>
+                        </div>
+                        <div class="flex items-center text-status-warning text-xs">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= rev.rating %}
+                                    <i data-lucide="star" class="w-3.5 h-3.5 fill-status-warning"></i>
+                                {% else %}
+                                    <i data-lucide="star" class="w-3.5 h-3.5 text-gray-300"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="ml-2 text-muted-text text-[11px]">for "{{ rev.listing.title }}"</span>
+                        </div>
+                        {% if rev.review_text %}
+                            <p class="text-xs text-secondary-text leading-relaxed italic">
+                                "{{ rev.review_text }}"
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="py-8 text-center text-xs text-muted-text">
+                No reviews recorded yet for this student.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

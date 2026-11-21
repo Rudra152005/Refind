@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Peer Reviews & Ratings – ReFind{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Dashboard Sidebar -->
+        {% include 'components/dashboard_sidebar.html' %}
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0 space-y-8">
+            
+            <!-- Reviews Received as Seller -->
+            <div class="bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-main-text font-heading">Reviews Received as Seller</h1>
+                        <p class="text-xs text-secondary-text mt-1">Peer feedback left on your completed item handovers.</p>
+                    </div>
+                    {% if user.average_rating %}
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-amber-50 border border-amber-200">
+                            <i data-lucide="star" class="w-4 h-4 fill-status-warning text-status-warning"></i>
+                            <span class="text-sm font-extrabold text-main-text">{{ user.average_rating }} / 5.0</span>
+                            <span class="text-xs text-muted-text">({{ user.total_ratings_count }} reviews)</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if received_reviews %}
+                    <div class="space-y-4">
+                        {% for rev in received_reviews %}
+                            <div class="p-4 rounded-2xl bg-soft-green/60 border border-border space-y-2">
+                                <div class="flex items-center justify-between text-xs">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-main-text">{{ rev.requester.full_name }}</span>
+                                        <span class="text-muted-text">for item</span>
+                                        <a href="{% url 'listings:detail' rev.listing.id %}" class="font-semibold text-primary-green hover:underline">
+                                            "{{ rev.listing.title }}"
+                                        </a>
+                                    </div>
+                                    <span class="text-muted-text text-[11px]">{{ rev.updated_at|naturaltime }}</span>
+                                </div>
+                                
+                                <div class="flex items-center text-status-warning text-xs">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= rev.rating %}
+                                            <i data-lucide="star" class="w-3.5 h-3.5 fill-status-warning"></i>
+                                        {% else %}
+                                            <i data-lucide="star" class="w-3.5 h-3.5 text-gray-300"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ml-2 font-bold text-main-text">{{ rev.rating }}.0</span>
+                                </div>
+
+                                {% if rev.review_text %}
+                                    <p class="text-xs text-secondary-text italic bg-white p-3 rounded-xl border border-border">
+                                        "{{ rev.review_text }}"
+                                    </p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="py-8 text-center text-xs text-muted-text">
+                        No reviews received yet. Complete handovers with students to build your reputation!
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Reviews Given by User -->
+            <div class="bg-card-bg rounded-3xl border border-border p-6 sm:p-8 shadow-subtle space-y-6">
+                <div class="pb-6 border-b border-border">
+                    <h2 class="text-lg font-bold font-heading text-main-text">Reviews You Have Submitted to Sellers</h2>
+                    <p class="text-xs text-secondary-text mt-1">Feedback you left for other students on items you bought or received.</p>
+                </div>
+
+                {% if given_reviews %}
+                    <div class="space-y-4">
+                        {% for rev in given_reviews %}
+                            <div class="p-4 rounded-2xl bg-white border border-border space-y-2">
+                                <div class="flex items-center justify-between text-xs">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-secondary-text">To Seller:</span>
+                                        <span class="font-bold text-main-text">{{ rev.listing.owner.full_name }}</span>
+                                        <span class="text-muted-text">for</span>
+                                        <a href="{% url 'listings:detail' rev.listing.id %}" class="font-semibold text-primary-green hover:underline">
+                                            "{{ rev.listing.title }}"
+                                        </a>
+                                    </div>
+                                    <span class="text-muted-text text-[11px]">{{ rev.updated_at|naturaltime }}</span>
+                                </div>
+
+                                <div class="flex items-center text-status-warning text-xs">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= rev.rating %}
+                                            <i data-lucide="star" class="w-3.5 h-3.5 fill-status-warning"></i>
+                                        {% else %}
+                                            <i data-lucide="star" class="w-3.5 h-3.5 text-gray-300"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ml-2 font-bold text-main-text">{{ rev.rating }}.0</span>
+                                </div>
+
+                                {% if rev.review_text %}
+                                    <p class="text-xs text-secondary-text italic bg-soft-green/50 p-3 rounded-xl border border-border">
+                                        "{{ rev.review_text }}"
+                                    </p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="py-8 text-center text-xs text-muted-text">
+                        You have not submitted reviews yet.
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
