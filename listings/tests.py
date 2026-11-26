@@ -102,3 +102,37 @@ class ListingsTest(TestCase):
         response_remove = self.client.post(reverse('listings:wishlist_toggle', kwargs={'pk': self.listing.pk}))
         self.assertEqual(response_remove.status_code, 200)
         self.assertFalse(self.buyer.saved_listings.filter(pk=self.listing.pk).exists())
+
+    def test_listing_create_resilient_when_cloudinary_fails(self):
+        import tempfile
+        from unittest.mock import patch
+        from django.conf import settings
+        from django.test import override_settings
+
+        self.client.login(username='seller@campus.edu', password='Password123!')
+        with tempfile.TemporaryDirectory() as tmp_media:
+            with override_settings(
+                DEBUG=False,
+                MEDIA_ROOT=tmp_media,
+                USE_CLOUDINARY=True,
+                CLOUDINARY_CLOUD_NAME='demo',
+                IS_TESTING=False,
+                INSTALLED_APPS=[*settings.INSTALLED_APPS, 'cloudinary_storage'],
+            ):
+                with patch(
+                    'core.storage.ResilientMediaStorage._get_cloudinary_storage',
+                    side_effect=RuntimeError('Cloudinary permission denied'),
+                ):
+                    response = self.client.post(reverse('listings:create'), {
+                        'title': 'Resilient Listing Item',
+                        'category': 'Books',
+                        'condition': 'Good',
+                        'listing_type': 'Sell',
+                        'price': '25.00',
+                        'description': 'Campus pickup at library',
+                        'image': get_test_image(),
+                    })
+                    self.assertEqual(response.status_code, 302)
+                    created = Listing.objects.get(title='Resilient Listing Item')
+                    self.assertTrue(bool(created.image))
+                    self.assertTrue(created.image.url.startswith('/media/'))

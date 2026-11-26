@@ -230,9 +230,14 @@ class ProfileView(View):
         user = request.user
         form = UserProfileUpdateForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Your profile details have been updated successfully.")
-            return redirect('accounts:profile')
+            try:
+                form.save()
+                messages.success(request, "Your profile details have been updated successfully.")
+                return redirect('accounts:profile')
+            except Exception as exc:
+                import logging
+                logging.getLogger(__name__).exception("Profile update failed for user %s: %s", user.pk, exc)
+                messages.error(request, "Could not save your profile changes right now. Please try again.")
         return render(request, 'accounts/profile.html', {
             'form': form,
             'active_tab': 'profile'

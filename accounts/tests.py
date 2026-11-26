@@ -78,6 +78,44 @@ class AccountsTest(TestCase):
         self.assertEqual(self.user.full_name, 'Updated Name')
         self.assertEqual(self.user.hostel, 'Hostel 9')
 
+    def test_profile_avatar_upload_resilient_when_cloudinary_fails(self):
+        import tempfile
+        from io import BytesIO
+        from unittest.mock import patch
+        from django.conf import settings
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import override_settings
+        from PIL import Image
+
+        buf = BytesIO()
+        Image.new('RGB', (50, 50), color='green').save(buf, format='JPEG')
+        avatar = SimpleUploadedFile('avatar.jpg', buf.getvalue(), content_type='image/jpeg')
+
+        self.client.login(username='test.student@campus.edu', password='TestPassword123!')
+        with tempfile.TemporaryDirectory() as tmp_media:
+            with override_settings(
+                DEBUG=False,
+                MEDIA_ROOT=tmp_media,
+                USE_CLOUDINARY=True,
+                CLOUDINARY_CLOUD_NAME='demo',
+                IS_TESTING=False,
+                INSTALLED_APPS=[*settings.INSTALLED_APPS, 'cloudinary_storage'],
+            ):
+                with patch(
+                    'core.storage.ResilientMediaStorage._get_cloudinary_storage',
+                    side_effect=RuntimeError('Cloudinary permission denied'),
+                ):
+                    response = self.client.post(reverse('accounts:profile'), {
+                        'full_name': 'Avatar User',
+                        'phone': '9876543210',
+                        'hostel': 'Hostel 9',
+                        'avatar': avatar,
+                    })
+                    self.assertEqual(response.status_code, 302)
+                    self.user.refresh_from_db()
+                    self.assertTrue(bool(self.user.avatar))
+                    self.assertTrue(self.user.avatar.url.startswith('/media/'))
+
     def test_admin_role_registration(self):
         response = self.client.post(reverse('accounts:register'), {
             'full_name': 'Campus Moderator',

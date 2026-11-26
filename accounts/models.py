@@ -45,7 +45,7 @@ class User(AbstractUser):
     full_name = models.CharField(_('full name'), max_length=150)
     phone = models.CharField(_('phone number'), max_length=20, blank=True)
     hostel = models.CharField(_('hostel / hall of residence'), max_length=100, blank=True)
-    avatar = models.ImageField(_('avatar image'), upload_to='avatars/', blank=True, null=True)
+    avatar = models.ImageField(_('avatar image'), upload_to='avatars/', max_length=500, blank=True, null=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     is_email_verified = models.BooleanField(_('email verified'), default=False)
     verification_code = models.CharField(_('verification code'), max_length=6, blank=True, null=True)

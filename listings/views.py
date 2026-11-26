@@ -141,12 +141,17 @@ class ListingCreateView(View):
     def post(self, request):
         form = ListingForm(request.POST, request.FILES)
         if form.is_valid():
-            listing = form.save(commit=False)
-            listing.owner = request.user
-            listing.status = 'Available'
-            listing.save()
-            messages.success(request, f'Listing "{listing.title}" published successfully!')
-            return redirect('listings:detail', pk=listing.pk)
+            try:
+                listing = form.save(commit=False)
+                listing.owner = request.user
+                listing.status = 'Available'
+                listing.save()
+                messages.success(request, f'Listing "{listing.title}" published successfully!')
+                return redirect('listings:detail', pk=listing.pk)
+            except Exception as exc:
+                import logging
+                logging.getLogger(__name__).exception("Listing creation failed: %s", exc)
+                messages.error(request, "Could not publish your listing right now. Please try again.")
         return render(request, 'listings/create.html', {'form': form})
 
 
@@ -166,16 +171,21 @@ class ListingUpdateView(View):
         
         form = ListingForm(request.POST, request.FILES, instance=listing)
         if form.is_valid():
-            updated_listing = form.save(commit=False)
-            if form.cleaned_data.get('clear_image2'):
-                updated_listing.image2.delete(save=False)
-                updated_listing.image2 = None
-            if form.cleaned_data.get('clear_image3'):
-                updated_listing.image3.delete(save=False)
-                updated_listing.image3 = None
-            updated_listing.save()
-            messages.success(request, f'Listing "{updated_listing.title}" updated successfully.')
-            return redirect('listings:detail', pk=updated_listing.pk)
+            try:
+                updated_listing = form.save(commit=False)
+                if form.cleaned_data.get('clear_image2') and updated_listing.image2:
+                    updated_listing.image2.delete(save=False)
+                    updated_listing.image2 = None
+                if form.cleaned_data.get('clear_image3') and updated_listing.image3:
+                    updated_listing.image3.delete(save=False)
+                    updated_listing.image3 = None
+                updated_listing.save()
+                messages.success(request, f'Listing "{updated_listing.title}" updated successfully.')
+                return redirect('listings:detail', pk=updated_listing.pk)
+            except Exception as exc:
+                import logging
+                logging.getLogger(__name__).exception("Listing update failed for pk=%s: %s", pk, exc)
+                messages.error(request, "Could not update your listing right now. Please try again.")
         return render(request, 'listings/edit.html', {'form': form, 'listing': listing})
 
 

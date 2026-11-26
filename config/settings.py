@@ -200,11 +200,11 @@ else:
 
 # Backwards compatibility for third-party libraries (e.g. django-cloudinary-storage)
 STATICFILES_STORAGE = STATICFILES_STORAGE_BACKEND
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DEFAULT_FILE_STORAGE = 'core.storage.ResilientMediaStorage'
 
 STORAGES = {
     'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        'BACKEND': 'core.storage.ResilientMediaStorage',
     },
     'staticfiles': {
         'BACKEND': STATICFILES_STORAGE_BACKEND,
@@ -230,10 +230,6 @@ if USE_CLOUDINARY and CLOUDINARY_CLOUD_NAME and not IS_TESTING:
         'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
         'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '').strip(),
         'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', '').strip(),
-    }
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    STORAGES['default'] = {
-        'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     }
 
 # Authentication URLs

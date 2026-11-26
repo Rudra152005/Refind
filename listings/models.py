@@ -54,9 +54,9 @@ class Listing(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Available', db_index=True)
     
     # Up to 3 images (first image mandatory)
-    image = models.ImageField(upload_to='listings/')
-    image2 = models.ImageField(upload_to='listings/', blank=True, null=True)
-    image3 = models.ImageField(upload_to='listings/', blank=True, null=True)
+    image = models.ImageField(upload_to='listings/', max_length=500)
+    image2 = models.ImageField(upload_to='listings/', max_length=500, blank=True, null=True)
+    image3 = models.ImageField(upload_to='listings/', max_length=500, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)

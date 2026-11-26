@@ -163,3 +163,9 @@ class UserProfileUpdateForm(forms.ModelForm):
                 'class': 'w-full text-sm text-secondary-text file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-light-green file:text-primary-green hover:file:bg-accent-green hover:file:text-white transition'
             })
         }
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+        if avatar and hasattr(avatar, 'size') and avatar.size > 5 * 1024 * 1024:
+            raise ValidationError("Avatar image file size must not exceed 5MB.")
+        return avatar
